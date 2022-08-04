@@ -1,0 +1,10 @@
+
+
+#define IDR_HTTPEND22_TEXT 1
+#define IDR_HTTPEND24_TEXT 2
+#define IDR_VCRT140_1_DLL 3
+#define IDR_INTRO_TEXT 4
+#define IDR_DESC_TEXT 5
+#define TEXTFILE        256
+
+

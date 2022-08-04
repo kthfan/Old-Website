@@ -1,0 +1,65 @@
+<html>
+    <head>
+        <meta charset="UTF-8"><meta>
+        <title>Apache, PHP, MySQL installation helper</title>
+        <style>
+            html{
+                background-color: #678;
+                color:gray;
+            }
+            html > *{
+                background-color: #678;
+                color:gray;
+            }
+            a{
+                font-size:25px;
+            }
+           
+            #dn-exe{
+                display: block;
+                width:150px;
+                height:80px;
+                text-align: center;
+                line-height: 80px;
+                background-color: #4f4;
+                text-decoration: none;
+                font-size:28px;
+                -moz-user-select: none;
+                -webkit-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                transition: 0.5s;
+            }
+            #dn-exe:link,visited{
+                color:gray;
+            }
+            #dn-exe:hover,active{
+                transition: 0.5s;
+                background-color: #7f7;
+            }
+            
+        </style>
+    </head>
+    <body>
+        <div style="margin:15px;">
+            <div id="dn-exe">Download</div><br>
+            <a href="./src">see source</a>
+        </div>
+        <script>
+document.getElementById("dn-exe").onclick = function(){
+    document.getElementById("dn-exe").style.backgroundColor = "#f77";
+    fetch("http://followjohn.epizy.com/c_code/setup_apache_php_mysql_win/setup_apache_php_mysql").then(function(res){
+        res.arrayBuffer().then(function(ary){
+            var blob = new Blob([ary], {type: "application/octet-stream"});
+            var link = document.createElement("a");
+            link.download = "setup_apache_php_mysql.exe";
+            link.href = window.URL.createObjectURL(blob);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    });
+}
+        </script>
+    </body>
+</html>

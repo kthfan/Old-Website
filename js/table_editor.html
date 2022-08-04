@@ -1,0 +1,464 @@
+﻿
+<html>
+
+
+<head>
+<meta charset="UTF-8">
+<title>表格編輯器</title>
+<style>
+body{
+  background-color:#000;
+  color:#ddd;
+  font-size:30px;
+}
+.dk{
+  background-color:#000;
+  color:#ddd;
+}
+.row{
+  /*font-size:32px;*/
+}
+.elem{
+  width:100px;
+  height:50px;
+  border:2px #cccccc solid;
+}
+.txtarea{
+  width:450px;
+  height:250px;
+  font-size:20px;
+}
+#dragdiv{
+  position:absolute;
+  z-index:999;
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  background-color:rgba(0,255,0,0.5);
+  color:#fff;
+  font-size:18px;
+  text-align:center;
+  font-weight:bold;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+<table>
+  <tr>
+    <td>
+      <font size=2>字體大小:</font><input value=30 id=fz class="dk"></input><br>
+    </td>
+    <td>
+      <font size=2>cell寬度:</font><input value=100 id=w class="dk"></input><br>
+    </td>
+    <td>
+      <font size=2>cell高度:</font><input value=50 id=h class="dk"></input><br>
+    </td>
+    <td>
+      <font size=2>上傳檔案:</font><input id=upld type="file"></input>
+    </td>
+    <td>
+      <font size=2>組合鍵:</font>
+      <select id=asm class="dk">
+        <option>ctrl</option>
+        <option>shift</option>
+        <option>alt</option>
+        <option>meta</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <font size=2>分隔字元</font><textarea id=sp class="dk" cols=1 rows=1></textarea><br>
+    </td>
+    <td>
+      <font size=2>換行字元</font><textarea id=ln class="dk" cols=1 rows=1></textarea><br>
+    </td>
+    <td>
+      <font size=2>編碼:</font><input value="UTF-8" id=chset class="dk"></input><br>
+    </td>
+    <td>
+      <font size=2>檔案名稱:</font><input id=uptitle class="dk" value="table.txt"></input>
+      <button id=dnld>下載</button>
+    </td>
+  </tr>
+</table>
+<br>
+<table>
+  <tr>
+    <td>
+      <textarea id=in wrap="off" class="txtarea dk"></textarea>
+      <button  id=inbn>輸入成表格</button>
+    </td>
+    <td>
+      <textarea id=out wrap="off" class="txtarea dk"></textarea>
+      <button id=outbn>輸出成字串</button>
+    </td>
+  </tr>
+</table>
+<br>
+<table id=my_table 
+  style="border:3px #cccccc solid;" 
+  cellpadding="10" border='1'>
+</table>
+<div id=dragdiv><span style="position:absolute;left:7;top:16;overflow:visible;">點我</span><div>
+<script>
+;(function(window,document,undefined){
+  var my_table=document.getElementById("my_table")
+    ,intxt=document.getElementById("in")
+    ,inbn=document.getElementById("inbn")
+    ,outtxt=document.getElementById("out")
+    ,outbn=document.getElementById("outbn")
+    ,font_size=document.getElementById("fz")
+    ,cell_width=document.getElementById("w")
+    ,cell_height=document.getElementById("h")
+    ,split_sym=document.getElementById("sp")
+    ,char_set= document.getElementById("chset")
+    ,ln_break=document.getElementById("ln")
+    ,download_bn=document.getElementById("dnld")
+    ,up_title =document.getElementById("uptitle")
+    ,upload_bn=document.getElementById("upld")
+    ,dragdiv=document.getElementById("dragdiv")
+    ,asm_key=document.getElementById("asm")
+    ,toElem=new Map(),rlen=0,clen=0,focus_x=0,focus_y=0
+    ,toIdx=[];
+  function set_div_inset(){
+    dragdiv.style.left=my_table.offsetWidth+my_table.offsetLeft;
+    dragdiv.style.top=my_table.offsetHeight+my_table.offsetTop;
+  }
+  function setDStyle(s,v){
+    for(var i=0;i<rlen;i++){
+      for(var j=0,elem;j<clen;j++){
+        elem=toIdx[i][j];
+        elem.style[s]=v;
+      }
+    }
+  }
+  function create_d(c,r){
+    var elem=document.createElement("td");
+    elem.contentEditable=true;
+    elem.wrap="off";
+    elem.className="elem";
+    elem.style.width=width;
+    elem.style.height=height;
+    elem.addEventListener("focus",onfocus());
+    toElem.set(elem,{c:c,r:r});
+    toIdx[r][c]=elem;
+    return elem;
+  }
+  function clear_table(){
+    my_table.innerText="";
+    clen=0;
+    rlen=0;
+    toElem=new Map();
+    toIdx=[];
+    set_div_inset();
+    //add_row();add_d();
+  }
+  function add_d(){
+    var col=document.createElement("td")
+      ,rs=Array.from(my_table.getElementsByTagName("tr"));
+    for(var i=0,elem;i<rlen;i++){
+      elem=create_d(clen,i);
+      rs[i].appendChild(elem);
+    }
+    clen++;
+    set_div_inset();
+  }
+  function add_row(){
+    var row=document.createElement("tr");
+    row.className="row";
+    toElem.set(row,rlen);
+    my_table.appendChild(row);
+    toIdx.push([]);
+    for(var i=0,elem;i<clen;i++){
+      elem=create_d(i,rlen);
+      row.appendChild(elem);
+    }
+    rlen++;
+    set_div_inset();
+  }
+  function del_d(){
+    var rs=Array.from(my_table.getElementsByTagName("tr"));
+    for(var i=0,elem;i<rlen;i++){
+      elem=rs[i].lastElementChild;
+      toElem.delete(elem);
+      toIdx[i].pop();
+      rs[i].removeChild(elem);
+    }
+    clen--;
+  }
+  function del_row(){
+    var row=my_table.lastElementChild;
+    toElem.delete(row);
+    toIdx.pop();
+    my_table.removeChild(row);
+    rlen--;
+  }
+  function onfocus(){
+    return function(e){
+      var elem=e.target,pos=toElem.get(elem);
+      focus_x=pos.c,focus_y=pos.r;
+    }
+  }
+  function onkeydown(e){
+    var key=e.key;
+    if(e[asm_key[asmkey].value+"Key"]){
+      if(key==="ArrowRight"||key==="Right"){
+        if(focus_x===clen-1) add_d();
+        toIdx[focus_y][focus_x+1].focus();
+        e.preventDefault();
+      }else if(key==="ArrowDown"||key==="Down"){
+        if(focus_y===rlen-1){
+          add_row();
+        }
+        toIdx[focus_y+1][focus_x].focus();
+        e.preventDefault();
+      }else if(key==="ArrowLeft"||key==="Left"){
+        if(!focus_x){
+          
+        }else{
+          toIdx[focus_y][focus_x-1].focus();
+        }
+        e.preventDefault();
+      }else if(key==="ArrowUp"||key==="Up"){
+        if(!focus_y){
+          
+        }else{
+          toIdx[focus_y-1][focus_x].focus();
+        }
+        e.preventDefault();
+      }
+    }
+  }
+  my_table.addEventListener("keydown",onkeydown);
+  inbn.addEventListener("click",function(){
+    var txt=intxt.value,byln=txt.split(lnsym)
+      ,len=byln.length,maxc=0,maxr=len,forap=byln;
+    for(var i=0,ln,tlen;i<len;i++){
+      ln=byln[i].split(sp);
+      forap[i]=ln;
+      tlen=ln.length;
+      if(maxc<tlen) maxc=tlen;
+    }
+    //my_table.innerHTML="";
+    len=maxr-rlen;
+    clear_table();
+    for(var i=0;i<maxr;i++){
+      add_row();
+    }
+    
+    len=maxc-clen;
+    for(var i=0;i<maxc;i++){
+      add_d();
+    }
+    for(var i=0;i<maxr;i++){
+      for(var j=0,t;j<maxc;j++){
+        t=forap[i][j];
+        if(!t) t="";
+        toIdx[i][j].innerText=t;
+      }
+    }
+    set_div_inset();
+  });
+  function to_string(){
+    var res=[],restxt="";
+    
+    for(var i=0,ln;i<rlen;i++){
+      ln=[];
+      for(var j=0,txt;j<clen;j++){
+        txt=toIdx[i][j].innerText;
+        txt=txt.split(sp).join("");
+        txt=txt.split(lnsym).join("");
+        ln.push(txt);
+      }
+      res.push(ln);
+    }
+    
+    var len=res.length,rreslen=len,creslen=0;
+    for(var i=len-1;i>=0;i--){
+      if(res[i].join("")==="") res.pop();
+      else break;
+    }
+    rreslen=res.length;
+    for(var i=0,cr;i<rreslen;i++){
+      len=res[i].length;
+      cr=len;
+      for(var j=len-1;j>=0;j--){
+        if(res[i][j]==="") res[i].pop(),cr--;
+        else break;
+      }
+      if(cr>creslen) creslen=cr;
+    }
+    for(var i=0,cr;i<rreslen;i++){
+      res[i]=res[i].join(sp);
+    }
+    return res.join(lnsym);
+  }
+  outbn.addEventListener("click",function(){
+    
+    //res=res.slice(0,rreslen);
+    outtxt.value=to_string();
+  });
+  var width=100,height=50,fz=30,sp="\t",lnsym="\n",chset="UTF-8",asmkey=0;
+  font_size.addEventListener("change",function(){
+    var res=this.value;
+    res=parseFloat(res);
+    if(isNaN(res)) this.value=fz;
+    else fz=res;
+    setDStyle("fontSize",fz);
+    outtxt.style.fontSize=fz/3*2;
+    intxt.style.fontSize=fz/3*2;
+    document.body.style.fontSize=fz;
+    set_div_inset();
+  });
+  cell_width.addEventListener("change",function(){
+    var res=this.value;
+    res=parseFloat(res);
+    if(isNaN(res)) this.value=width;
+    else {
+      width=res;
+      setDStyle("width",res);
+      set_div_inset();
+    }
+  });
+  cell_height.addEventListener("change",function(){
+    var res=this.value;
+    res=parseFloat(res);
+    if(isNaN(res)) this.value=height;
+    else {
+      height=res;
+      setDStyle("height",res);
+      set_div_inset();
+    }
+  });
+  split_sym.addEventListener("change",function(){
+    var res=this.value;
+    if(res) sp=res;
+  });
+  ln_break.addEventListener("change",function(){
+    var res=this.value;
+    if(res) lnsym=res;
+  });
+  char_set.addEventListener("change",function(){
+    var res=this.value;
+    if(res) chset=res;
+  });
+  asm_key.onchange=function(e){
+    asmkey=this.selectedIndex;
+  }
+  upload_bn.onchange=function(){
+    var file=upload_bn.files;
+    if(file&&file[0]){
+      file=file[0];
+      readFile(file);
+    }
+  }
+  download_bn.onclick=function(){
+    var filename = up_title.value;
+    outbn.click();
+    var text = outtxt.value;
+    console.log('text/plain;charset='+chset);
+    var blob = new Blob([text], {type:'text/plain;charset='+chset,encoding:chset,charset:chset});
+    var link = document.createElement("a");
+    link.download = filename;
+    link.href = window.URL.createObjectURL(blob);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+  document.body.addEventListener("dragover",function(e){
+    if(e.dataTransfer.files[0]) e.preventDefault();
+  });
+  function drop_file(){
+    return function(e){
+      var file;
+      if(!e.dataTransfer||!e.dataTransfer.items.length) return;
+      if(e.dataTransfer.files.length){
+        file=e.dataTransfer.files[0];
+        if(file){
+          readFile(file);
+          e.preventDefault();
+        }
+      }else{
+        var list=e.dataTransfer.items;
+        var elem=e.target;
+        var is_elem=0;
+        if(elem.classList.contains("elem")) is_elem=1;
+        for(var i in list){
+          var data_e = list[i];
+          if(data_e.type==="text/plain"){
+            data_e.getAsString(function(str){
+              if(is_elem){
+                elem.innerText=str;
+              }else{
+                intxt.value=str;
+                inbn.click();
+              }
+            });
+            e.preventDefault();
+            return;
+          }
+        }
+      }
+    }
+  }
+  dragdiv.onclick=function(){
+    add_row();
+    add_d();
+  }
+  document.body.addEventListener("drop",drop_file());
+  Array.from(document.getElementsByTagName("td")).forEach(function(elem){
+    elem.addEventListener("dragover",function(e){e.preventDefault();});
+  });
+  function readFile(file){
+    if(!file||file.constructor!==File) return;
+    up_title.value=file.name;
+    var reader=new FileReader(),res;
+    reader.readAsText(file,chset);
+    reader.onload = function(e) {
+      res = reader.result;
+      intxt.value=res;
+      inbn.click();
+    };
+  }
+  function storeFile(){
+    res=to_string();
+    localStorage.setItem("__表格編輯器_",JSON.stringify({table:res
+      ,w:width,h:height,fz:fz,sp:sp,lnsym:lnsym,chset:chset,asmkey:asmkey}));
+  }
+  function init_file(){
+    etr=localStorage.getItem("__表格編輯器_");
+    if(!etr) return;
+    try{
+      etr=JSON.parse(etr);
+    }catch(e){
+      return;
+    }
+    width=etr.w,height=etr.h,fz=etr.fz,sp=etr.sp,lnsym=etr.lnsym
+      ,chset=etr.chset,asmkey=etr.asmkey;
+    cell_width.value=width;
+    cell_height.value=height;
+    font_size.value=fz;
+    split_sym.value=sp;
+    ln_break.value=lnsym;
+    char_set.value=chset;
+    intxt.value=etr.table;
+    asm_key.selectedIndex=asmkey;
+    inbn.click();
+  }
+  add_row();
+  add_d();
+  toIdx[0][0].innerText="";
+  init_file();
+  setInterval(storeFile,60000);
+})(window,document);
+
+</script>
+</body>
+
+
+
+
+</html>

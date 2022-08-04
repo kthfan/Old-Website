@@ -1,0 +1,68 @@
+Apache 2.2(Can be downloaded from https://www.apachelounge.com/download/win32/binaries/httpd-2.2.34-win32.zip)
+Apache 2.4(Can be downloaded from https://www.apachelounge.com/download/VS16/binaries/httpd-2.4.46-win32-VS16.zip)
+PHP(Can be downloaded from https://windows.php.net/downloads/releases/archives/php-5.4.32-Win32-VC9-x86.zip)
+MySQL(Can be downloaded from https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.23-winx64.zip)
+As for ASP:
+mod_aspdotne(https://sourceforge.net/projects/mod-aspdotnet/files/mod_aspdotnet/2.x.0.2006/mod_aspdotnet-2.2.0.2006-setup-r2.msi/download)
+.NET Framework(Can be downloaded from https://dotnet.microsoft.com/download/visual-studio-sdks)
+vcruntime140_1.dll is downloaded from https://www.azdll.net/files/vcruntime140-1-dll
+
+Install Steps:
+  1. httpd.conf in Apache
+     (a) Replace "c:/Apache[version]" with "[Apache Path]".
+     (b) Appand text:
+
+<IfModule dir_module>
+  DirectoryIndex index.html index.php
+</IfModule>
+
+LoadModule php5_module "c:/php/php5apache2_2.dll"
+AddType application/x-httpd-php .php
+PHPIniDir "c:/php/"
+
+ServerName 127.0.0.1
+
+<IfModule mod_aspdotnet.cpp>
+  AspNetMount / "c:/Apache2/htdocs/"
+  Alias / "c:/Apache2/htdocs/"
+  <Directory "c:/Apache2/htdocs/">
+    Options FollowSymlinks ExecCGI
+    Order allow,deny
+    Allow from all
+    DirectoryIndex index.html index.aspx
+  </Directory>
+  AliasMatch "^/(?i)aspnet_client/system_web/(\d+ )_(\d+ )_(\d+ )_(\d+ )/(.*)" "C:/Windows/Microsoft.NET/Framework/v$1.$2.$3/ASP.NETClientFiles/$4"
+  <Directory "C:/Windows/Microsoft.NET/Framework/v*/ASP.NETClientFiles">
+    Options FollowSymlinks
+    Order allow,deny
+    Allow from all
+  </Directory>
+</IfModule>
+
+#Modified by followjohn.
+
+         to the end of httpd.conf .
+  2. php.ini-production and php.ini-development in PHP
+     (a) Append text "[Apache Path]/htdocs/" after text "doc_root =".
+     (b) Rename php.ini-development to php.ini .
+  3. Extracte files
+     (a) Extracting vcruntime140_1.dll to [MySQL Path]/bin/
+  4. Execute commands
+     (a) httpd -t
+     (b) httpd -k install
+     (c) httpd -k start
+     (d) mysqld --install
+     (e) mysqld --initialize
+     (f) net start mysql
+  5. Solve MySQL Password
+     (a) Read the file [Computer Name].err under [MySQL Path]/data/
+     (b) Find text "A temporary password is generated for root" and get the password.
+     (c) Execute mysqladmin -u root -p password [new password].
+     (d) Enter the default password for root.
+
+Uninstall Steps:
+  1. Execute commands
+     (a) net stop mysql
+     (b) mysqld --remove
+     (c) httpd -k stop
+     (d) httpd -k uninstall

@@ -1,0 +1,569 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta charset="UTF-8">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta http-equiv="content-language" content="en">
+
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<style>
+	@media (prefers-color-scheme: light){
+		
+	}
+	@media (prefers-color-scheme: dark){
+		body{
+		  background-color:#111;
+		  color:#ccc;
+		}
+		textarea{
+		  background-color:#000;
+		  color:#ccc;
+		}
+		input[type="checkbox"]{
+		  filter:invert(92%);
+		}
+		input[type="radio"]{
+		  filter:invert(92%);
+		}
+		input{
+		  background-color:#000;
+		  color:#ccc;
+		}
+		select{
+		  background-color:#000;
+		  color:#ccc;
+		}
+		button{
+		  background-color:#000;
+		  color:#ccc;
+		}
+		audio::-webkit-media-controls-panel {
+		  background-color: #111;
+		}
+		audio::-webkit-media-controls-current-time-display,
+		audio::-webkit-media-controls-time-remaining-display,
+		audio::-webkit-media-controls-mute-button,
+		audio::-webkit-media-controls-play-button,
+		audio::-webkit-media-controls-timeline,
+		audio::-webkit-media-controls-volume-slider{
+		  filter: invert(1);
+		}
+		::-webkit-scrollbar{
+		  background-color: #113;
+		}
+		::-webkit-scrollbar-button {
+		  width: 0px;
+		  height: 0px;
+		}
+		::-webkit-scrollbar-thumb {
+		  background: #777;
+		  
+		  border-radius: 50px;
+		}
+		::-webkit-scrollbar-track {
+		  background: #113;
+		  border-radius: 53px;
+		}
+
+		::-webkit-scrollbar-corner {
+		  background: transparent;
+		}
+		iframe{
+			background-color: white;
+			color: black;
+			filter: invert(92%);
+		}
+	}	
+	#show-iframe {
+	  width: 90%;
+		height: 500px;
+	}
+	#edit-file {
+		width: 90%;
+		height: 500px;
+	}
+	.hidden{
+		display: none;
+	}
+	
+	</style>
+  <!-- base can be used to keep asset paths relative to here -->
+  <base href="https://cdn.jsdelivr.net/npm/latex.js/dist/">
+
+  <!-- <script src="latex.js"></script> -->
+  <!-- <script src="node_modules/latex.js/dist/latex.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js/dist/latex.js"></script>
+  
+	<script src="https://cdn.jsdelivr.net/g/ace@1.2.1(min/ace.js+min/ext-language_tools.js+min/mode-latex.js+min/snippets/latex.js)"></script>
+	
+	
+  <title>LaTeX.js</title>
+</head>
+
+<body>
+	<h1>Compiling LaTeX</h1>
+	<h3>Step-1</h3>
+	<p>
+		Upload latex file: <input id="upload-file" type="file"/>
+	</p>
+	<h3>Step-2</h3>
+	Edit the file: <button id="start-edit">edit</button>
+	<br/>
+	<div id="edit-file"></div>
+	<h3>Step-3</h3>
+    <table style="width:600px">
+        <tr>
+            <td>Show in this page</td>
+            <td>Open in new window</td>
+            <td>Open in popup window</td>
+            
+        </tr>
+        <tr>
+            <td><button id="show-page">show</button></td>
+            <td><button id="open-window">open</button></td>
+            <td><button id="open-popup-window">open</button></td>
+        </tr>
+    </table>
+    
+	<iframe id="show-iframe" class="hidden"></iframe>
+	
+    <h4>Download latex file</h4>
+        <button id="download-latex-file">download</button>
+	<h4>Download pdf</h4> 
+    <div>
+        <!-- File name: <input id="file-name" type="text"/>  -->
+        <button id="download-pdf">download</button>
+    </div>
+    <br/>
+	<script>
+		const DEFAULT_COMMAND = {};
+		//DEFAULT_COMMAND["\\hfill"] = findNewCommandContent("{\\hfill}{}", 0, DEFAULT_COMMAND);
+		DEFAULT_COMMAND["\\cdots"] = findNewCommandContent("{\\cdots}{\\dots}", 0, DEFAULT_COMMAND);
+		DEFAULT_COMMAND["\\hdots"] = findNewCommandContent("{\\hdots}{\\dots}", 0, DEFAULT_COMMAND);
+		function findNewCommandContent(text, start, _newCommandPattern){
+			const len = text.length;
+			let i = start;
+			let flag = false;
+			let mainArg = "";
+			let content = "";
+			let parrStack = [];
+			let commandArgs = [];
+			let optArg = "";
+			let contentStart = start;
+			// find main arg
+			while(i < len){
+				let ch = text[i];
+				if(ch === " "){
+					
+				}else if(ch === "{"){
+					flag = true;
+				}else if(ch === "}"){
+					if(!flag) throw 'Unexpect character } before {';
+					flag = false;
+					i++;
+					break;
+				}else{
+					if(!flag) throw `Unexpect character ${ch} before {`;
+					mainArg += ch;
+				}
+				i++;
+			}
+			mainArg = mainArg.trim();
+			// find optional arg
+			while(i < len){
+				let ch = text[i];
+				if(ch === " "){
+					
+				}else if(ch === "{"){
+					if(flag) throw 'Unexpect character { after [';
+					break;
+				}else if(ch === "["){
+					flag = true;
+				}else if(ch === "]"){
+					if(!flag) throw 'Unexpect character [ before ]';
+					flag = false;
+					i++;
+					break;
+				}else if(ch === "\\"){
+					i++;
+				}else{
+					if(!flag) throw `Unexpect character ${ch} before {`;
+					optArg += ch;
+				}
+				i++;
+			}
+			optArg = Number.parseInt(optArg.trim());
+			if(Number.isNaN(optArg)) optArg = 0; 
+			// parse command content
+			contentStart = i + 1;
+			while(i < len){
+				let ch = text[i];
+				if(ch === "{"){
+					parrStack.push({
+						type: '{',
+						index: i
+					});
+				}else if(ch === "}"){
+					parrStack.pop();
+					if(parrStack.length === 0) {
+						i++;
+						break;
+					}
+				}else if(ch === "\\"){
+					i++;
+				}
+				i++;
+			}
+			content = text.substring(contentStart, i - 1);
+			// parse content by _newCommandPattern
+			for(let key of Object.keys(_newCommandPattern)){
+				let info = _newCommandPattern[key];
+				let index = 0;
+				while((index = content.indexOf(key, index)) !== -1){
+					if(content[index - 1] !== '\\' && content[index + key.length].search(/[a-zA-Z]/i) === -1){
+						let [newContent, oldContentEnd] = applyNewCommand(content, index + key.length, info);
+						let frontContent = content.substring(0, index) + newContent;
+						content = frontContent + content.substr(oldContentEnd);
+					}else index += key.length;
+				}
+			}
+			// parse commandArgs
+			commandArgs = Array.from(Array(optArg)).map(()=>new Object());
+			for(let j=0; j<content.length; j++){
+				let ch = content[j];
+				if(ch === "#"){
+					let argNum = Number.parseInt(content.substr(j+1));
+					if(Number.isNaN(argNum)) throw 'Unexpect characters after #';
+					if(commandArgs.length <= argNum - 1) throw `#${argNum} out of range`;
+					commandArgs[argNum-1].num = argNum - 1;
+					commandArgs[argNum-1].start = j;
+					commandArgs[argNum-1].length = String(argNum).length + 1;
+					j += String(argNum).length;
+				}else if(ch === "\\"){
+					j++;
+				}
+			}
+			// sort commandArgs
+			for(let k=0;k<commandArgs.length;k++){
+				for(let j=commandArgs.length-1;j>k;j--){
+					if(commandArgs[j].start < commandArgs[j-1].start){
+						let temp = commandArgs[j];
+						commandArgs[j] = commandArgs[j-1];
+						commandArgs[j-1] = temp;
+					}
+				}
+			}
+			return {
+				command: mainArg, 
+				argc: optArg,
+				content: content,
+				commandArgs: commandArgs,
+				contentStart: contentStart,
+				allLength: i - start,
+				start: start
+			};
+		}
+		function convertNewCommand(content){
+			const [_newCommandPattern, orderedNewCommandPattern] = parseNewCommand(content);
+			// clear newcommand
+			let index = 0;
+			for(let i=orderedNewCommandPattern.length-1; i>=0; i--){
+				const info = orderedNewCommandPattern[i];
+				let contentBack = content.substr(info.start + info.allLength);//.trimStart();	
+				content = content.substring(0, info.start-'\\newcommand'.length) + 
+					contentBack;
+			}
+			// replace macro
+			for(let key of Object.keys(_newCommandPattern)){
+				let info = _newCommandPattern[key];
+				let index = 0;
+				while((index = content.indexOf(key, index)) !== -1){
+					if(content[index - 1] !== '\\' && 
+						(content[index + key.length]?.search(/[a-zA-Z]/i) ?? -1) === -1){
+						let [newContent, oldContentEnd] = applyNewCommand(content, index + key.length, info);
+						let frontContent = content.substring(0, index) + newContent;
+						content = frontContent + content.substr(oldContentEnd);
+						
+					}else index += key.length;
+				}
+			}
+			return content;
+		}
+		function applyNewCommand(text, start, info){
+			let i = start;
+			let parrCount = 0;
+			const len = text.length;
+			const argsContent = [];
+			let flag = false;
+			let parrContent = [];
+			let result = "";
+			// parse exact arguments
+			if(info.argc > 0){
+				while(i < len){
+					const ch = text[i];
+					if(ch === "\\"){
+						i++;
+					}else if(ch === "{"){
+						parrContent.push(i+1);
+					}else if(ch === "}"){
+						let parrStart = parrContent.pop();
+						if(parrContent.length === 0){
+							argsContent.push(text.substring(parrStart, i));
+							if(argsContent.length >= info.argc) {
+								i++;
+								break;
+							}
+						}
+					}
+					i++;
+				}
+			}
+			let lastIndex = 0;
+			for(let j=0; j<info.commandArgs.length; j++){
+				let argComd = info.commandArgs[j];
+				result += info.content.substring(lastIndex, argComd.start) + argsContent[argComd.num];
+				lastIndex = argComd.start + argComd.length;
+			}
+			result += info.content.substr(lastIndex);
+			return [result, i];
+		}
+		function parseNewCommand(text){
+			const _newCommandPattern = Object.assign({}, DEFAULT_COMMAND);
+			const orderedNewCommandPattern = [];
+			const len = text.length;
+			var index = 0;
+			while((index = text.indexOf("\\newcommand", index)) !== -1){
+				if(text[index - 1] !== '\\'){
+					let info = findNewCommandContent(text, index + "\\newcommand".length, _newCommandPattern);
+					_newCommandPattern[info.command] = info;
+					orderedNewCommandPattern.push(info);
+				}
+				index += "\\newcommand".length;
+			}
+			return [_newCommandPattern, orderedNewCommandPattern];
+		}
+	</script>
+	<script>
+		var uploadFile = document.getElementById("upload-file");
+		var startEdit = document.getElementById("start-edit");
+		var editFile = document.getElementById("edit-file");
+		var fileName = document.getElementById("file-name");
+		var openWindow = document.getElementById("open-window");
+		var downloadPdf = document.getElementById("download-pdf");
+		var showPage = document.getElementById("show-page");
+		var openPopupWindow = document.getElementById("open-popup-window");	
+		var showIframe = document.getElementById("show-iframe");
+        var downloadLatex = document.getElementById("download-latex-file");
+		
+		
+		var pageIsShowing = false;
+		var isStartEditClicked = uploadFile.files.length == 0;
+		
+		var editor = ace.edit("edit-file");
+
+			ace.config.set('basePath', 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/')
+		  editor.setOptions({
+			mode: "ace/mode/latex",
+			fontSize: 14,
+			hScrollBarAlwaysVisible: false,
+			vScrollBarAlwaysVisible: true,
+			indentedSoftWrap: true,
+			printMargin: false,
+			printMarginColumn: false,
+			tabSize: 4,
+			useSoftTabs: true,
+		  });
+		  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+			editor.setOptions({theme: 'ace/theme/tomorrow_night'});
+		  editor.setOptions({
+			enableBasicAutocompletion: true,
+			enableLiveAutocompletion: true,
+			enableSnippets: true,
+		  });
+		editor.resize();
+		  
+		
+		
+		function onUploadFile(callback){
+			var file = uploadFile.files;
+			if(!(file&&file[0])) return;
+			file=file[0];
+			
+			fileName.value = file.name;
+			var reader=new FileReader();
+			reader.readAsText(file, "UTF-8");
+			reader.onload = function(e) {
+			  callback(reader.result);
+			};
+		}
+		function appendLatex(doc, text){
+			text = convertNewCommand(text);
+			var generator = new latexjs.HtmlGenerator({
+				hyphenate: false ,
+				CustomMacros: (function() {
+					var args      = CustomMacros.args = {},
+						prototype = CustomMacros.prototype;
+
+					function CustomMacros(generator) {
+					  this.g = generator;
+					}
+
+					args['bf'] = ['HV'];
+					args['vdots'] = ['H'];
+					
+					prototype['bf'] = function() {
+					  this.g.setFontWeight('bf')
+					};
+					
+					prototype['vdots'] = function() {
+						var div = document.createElement("div");
+						div.classList.add("vdots");
+						return [div];
+					};
+					
+					prototype['hfill'] = function() {
+						var span = document.createElement("span");
+						span.style.width = "100%";
+						return [span];
+					};
+
+					return CustomMacros;
+				  }())
+			})
+			
+			try{
+				generator = latexjs.parse(text, { generator: generator });
+			}catch(e){
+				if(!e.location) throw e;
+				alert(`${e.name}: ${e.message}, in ${e.location.start.line}:${e.location.end.line} ${e.location.start.column}:${e.location.end.column}`);
+				return;	
+			}
+			
+			while(doc.body.lastChild)
+				doc.body.removeChild(doc.body.lastChild);
+			doc.head.appendChild(generator.stylesAndScripts("https://cdn.jsdelivr.net/npm/latex.js/dist/"))
+			//doc.head.appendChild(generator.stylesAndScripts(""))
+			doc.body.appendChild(generator.domFragment());
+		}
+		function renewShowIframe(){
+			if(isStartEditClicked) appendLatex(showIframe.contentDocument, editor.getValue());
+			else{
+				onUploadFile(fileContent=>{
+					appendLatex(showIframe.contentDocument, fileContent);
+				});
+			}
+			
+		}
+		function getWidth(doc) {
+		  return Math.max(
+			doc.body.scrollWidth,
+			doc.documentElement.scrollWidth,
+			doc.body.offsetWidth,
+			doc.documentElement.offsetWidth,
+			doc.documentElement.clientWidth
+		  );
+		}
+
+		function getHeight(doc) {
+		  return Math.max(
+			doc.body.scrollHeight,
+			doc.documentElement.scrollHeight,
+			doc.body.offsetHeight,
+			doc.documentElement.offsetHeight,
+			doc.documentElement.clientHeight
+		  );
+		}
+		function openLatexWindow(a, b, c, checkDarkTheme = true){
+			var win = window.open(a, b ,c);
+			if (checkDarkTheme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+				win.document.body.style.backgroundColor = "#fff";
+				win.document.body.style.color = "#000";
+				win.document.documentElement.style.backgroundColor = "#fff";
+				win.document.documentElement.style.color = "#000";
+				win.document.documentElement.style.filter = "invert(92%)";
+			}
+			win.document.body.style.height = "100%";
+			win.document.documentElement.style.height = "100%";
+			win.onresize = function(){
+				win.document.documentElement.style.width = getWidth(win.document) + "px";
+				win.document.documentElement.style.height = getHeight(win.document) + "px";
+			}
+			setTimeout(()=>win.onresize(), 200);
+			if(isStartEditClicked) appendLatex(win.document, editor.getValue());
+			else{
+				onUploadFile(fileContent=>{
+					appendLatex(win.document, fileContent);
+				});
+			}
+			return win;
+		}
+		
+		
+		uploadFile.oninput = ()=>{isStartEditClicked = false;};
+		uploadFile.onchange = ()=>{isStartEditClicked = false;};
+		
+		startEdit.onclick = function(){
+			onUploadFile(fileContent=>{
+				editor.setValue(fileContent);
+				isStartEditClicked = true;
+			});
+		};
+		
+		openWindow.onclick = function(){
+			openLatexWindow("", fileName.value, "");
+		};
+		openPopupWindow.onclick = function(){
+			openLatexWindow("", fileName.value, `toolbar=yes,scrollbars=yes,resizable=yes,width=${screen.width/2},height=${screen.height/4*3}`);
+		};
+		downloadPdf.onclick = function(){
+			var iframe =  showIframe;//document.createElement('iframe');
+			// iframe.style.display = 'none';
+            renewShowIframe();
+            setTimeout(function() {
+				iframe.focus();
+				iframe.contentWindow.print();	
+			}, 1000);
+			// document.body.appendChild(iframe);
+			// iframe.onload = function(){
+			// 	var timer = setInterval(function() {
+			// 	    var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+			// 	    // Check if loading is complete
+			// 	    if (iframeDoc.readyState == 'complete' || iframeDoc.readyState == 'interactive') {
+			// 		    clearInterval(timer);
+			// 		    if(isStartEditClicked) appendLatex(iframe.contentDocument, editor.getValue());
+			// 			else{
+			// 				onUploadFile(fileContent=>{
+			// 					appendLatex(iframe.contentDocument, fileContent);
+			// 				});
+			// 			}
+			// 			setTimeout(function() {
+			// 				iframe.focus();
+			// 				iframe.contentWindow.print();
+			// 				document.body.removeChild(iframe);
+			// 			}, 1000);
+			// 		   return;
+			// 	    }
+			// 	}, 1000);
+			
+			// }
+		};
+		
+		showPage.onclick = function(){
+			if(pageIsShowing){
+				showIframe.classList.add("hidden");
+				pageIsShowing = false;
+			}else{
+				renewShowIframe();
+				showIframe.classList.remove("hidden");
+				pageIsShowing = true;
+			}
+		}
+		
+		
+	</script>
+</body>
+
+</html>

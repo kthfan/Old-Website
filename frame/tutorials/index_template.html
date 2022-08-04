@@ -1,0 +1,136 @@
+﻿<html>
+<head>
+<title>Frame</title>
+
+<link rel=stylesheet type="text/css" href="../files/latest/css/base.css">
+<link rel=stylesheet type="text/css" href="../files/latest/css/frameEx.css">
+<link rel=stylesheet type="text/css" href="../files/latest/css/theme.css">
+<link rel=stylesheet type="text/css" href="../files/latest/css/menu.css">
+<link rel=stylesheet type="text/css" href="../css/gen.css">
+<link rel=stylesheet type="text/css" href="../css/menu-style.css">
+
+<style>
+.tutorial-title{
+  font-family: "Segoe UI",Arial,sans-serif;
+  font-size: 20px;
+  padding: 0 16px;
+  line-height: 40px;
+}
+#inner-frame{
+  position: fixed;
+  border-style:none;
+}
+</style>
+
+<script src="../files/latest/js/main.js"></script>
+<script src="../files/latest/js/frameEx.js"></script>
+<script src="../files/latest/js/event.js"></script>
+<script src="../files/latest/js/theme.js"></script>
+<script src="../files/latest/js/menu.js"></script>
+<script src="../js/lib.js"></script>
+
+
+
+</head>
+
+<body>
+<div id="top-nav-div" class="fixed-elem">
+  <div id="title-div">
+    <a class="logo" href="../index.html">Frame</a>
+  </div>
+</div>
+
+<div id="main-div">
+<iframe id="inner-frame"></iframe>
+</div>
+
+<script src="../js/header.js"></script>
+<script>
+
+var leftMenu = Menu.createMenu(
+  {
+    type:"scrollbar"
+    ,vertical:true
+    , parent:main_div
+    , x:0
+    , y:TITLE_HEIGHT + TOP_MENU_HEIGHT
+    , itemSize: 20
+    , style:"empty"
+    , width:LEFT_MENU_WIDTH
+    , height:MAIN_DIV_HEIGHT
+    , barPosition:"right"
+   }
+  );
+var inner_frame = document.getElementById("inner-frame");
+inner_frame.style.left = LEFT_MENU_WIDTH;
+inner_frame.style.top = TITLE_HEIGHT + TOP_MENU_HEIGHT;
+inner_frame.style.width = getBrowserWidth() - LEFT_MENU_WIDTH - 18;
+inner_frame.style.height = MAIN_DIV_HEIGHT -4;
+;(function(){
+  
+  var topMenuList = [gen_a("Downloads", "../downloads/index.html"),
+                    gen_a("Tutorials", "../tutorials/index.html") ];
+  var tutorList = [
+    {t:"Basic",c:[tutSrcElem("test", "intro", "../basic/create1.json"), "abc"]},
+    {t:"test",c:[tutSrcElem("test", "attr", "../basic/attr.json"), "abc"]}
+  ];
+  topMenu.buildByList(topMenuList);
+  topMenu.menuElem.id = "top-menu";
+  leftMenu.menuElem.id = "left-menu";
+  topMenu.forEach(function(elem){
+    elem.classList.add("top-menu-elem");
+  });
+    function renderLeftMenu(){
+    for(var i=0;i<tutorList.length;i++){
+      var p_elem = document.createElement("div");
+      var title_elem = document.createElement("div");
+      p_elem.appendChild(title_elem);
+      title_elem.innerText = tutorList[i].t;
+      title_elem.classList.add("tutorial-title");
+      title_elem.style.width = LEFT_MENU_WIDTH;
+      title_elem.style.height = TUTORIAL_TITLE_HEIGHT;
+      var t_menu = Menu.createMenu(
+        {
+          type:"growing"
+          ,vertical:true
+          , parent:p_elem
+          , x:0
+          , y:TUTORIAL_TITLE_HEIGHT
+          , itemSize: TUTORIAL_ELEM_HEIGHT 
+          , style:"black"
+          ,width:LEFT_MENU_WIDTH
+        }
+      );
+      var tutor_c_list = tutorList[i].c;
+      for(var j=0;j<tutor_c_list.length;j++){
+        t_menu.append(tutor_c_list[j]);
+      }
+      leftMenu.append(p_elem);
+      p_elem.style.width = LEFT_MENU_WIDTH;
+      p_elem.style.height = TUTORIAL_TITLE_HEIGHT + TUTORIAL_ELEM_HEIGHT *tutorList[i].c.length;
+    }
+  }
+  function setSomeElementsSize(){
+    var docWidth = document.documentElement.clientWidth;
+    title_div.style.width = docWidth;
+    topMenu.width = docWidth;
+    top_nav_div.style.width = document.documentElement.clientWidth;
+    leftMenu.height = getBrowserHeight() - TITLE_HEIGHT - TOP_MENU_HEIGHT;
+    inner_frame.style.width = getBrowserWidth() - LEFT_MENU_WIDTH - 18;
+    inner_frame.style.height = getBrowserHeight() - TITLE_HEIGHT - TOP_MENU_HEIGHT -4;
+    
+    leftMenu.clear();
+    renderLeftMenu();
+  }
+  
+  window.addEventListener("resize", setSomeElementsSize);
+  renderLeftMenu();
+  
+})();
+
+
+
+
+</script>
+</body>
+</html> 

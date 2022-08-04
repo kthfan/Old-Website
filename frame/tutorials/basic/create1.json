@@ -1,0 +1,26 @@
+{
+  "title": "Create a frame",
+  "description":"none.",
+  "code":[
+    {
+      "title":"1.", "description":null
+      , "code":"myFrame = defaultManager.addChildFrame();"
+    },{
+      "title":"2.", "description":null
+      , "code":"myFrame = defaultManager.addChildFrame({});"
+    },{
+      "title":"3.", "description":null
+      , "code":"myFrame = defaultManager.addChildFrame({elem:document.createElement(\"div\")});"
+    },{
+      "title":"4.", "description":null
+      , "code":"myFrame = defaultManager.addChildFrame(document.createElement(\"div\"));"
+    },{
+      "title":"5.", "description":null
+      , "code":"myFrame = defaultManager.addChildFrame(document.createElement(\"div\"));"
+    },{
+      "title":"6.", "description":null
+      , "code":"myFrame = defaultManager.addChildFrame({elem:{},title:\"title\"});"
+    }
+    
+  ]
+}

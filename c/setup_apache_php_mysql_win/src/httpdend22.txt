@@ -1,0 +1,29 @@
+
+<IfModule dir_module>
+  DirectoryIndex index.html index.php
+</IfModule>
+
+LoadModule php5_module "c:/php/php5apache2_2.dll"
+AddType application/x-httpd-php .php
+PHPIniDir "c:/php/"
+
+ServerName 127.0.0.1
+
+<IfModule mod_aspdotnet.cpp>
+  AspNetMount / "c:/Apache2/htdocs/"
+  Alias / "c:/Apache2/htdocs/"
+  <Directory "c:/Apache2/htdocs/">
+    Options FollowSymlinks ExecCGI
+    Order allow,deny
+    Allow from all
+    DirectoryIndex index.html index.aspx
+  </Directory>
+  AliasMatch "^/(?i)aspnet_client/system_web/(\d+ )_(\d+ )_(\d+ )_(\d+ )/(.*)" "C:/Windows/Microsoft.NET/Framework/v$1.$2.$3/ASP.NETClientFiles/$4"
+  <Directory "C:/Windows/Microsoft.NET/Framework/v*/ASP.NETClientFiles">
+    Options FollowSymlinks
+    Order allow,deny
+    Allow from all
+  </Directory>
+</IfModule>
+
+#Modified by followjohn.

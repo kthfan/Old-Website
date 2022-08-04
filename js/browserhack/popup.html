@@ -1,0 +1,26 @@
+<html>
+<head>
+    <title>popup</title>
+</head>
+
+<body>
+
+</body>
+<script>
+
+document.documentElement.style.width = screen.width;
+document.documentElement.style.height = screen.height;
+document.documentElement.onclick = function(){
+var popupwin = window.open("","__blank","height=1,width=1,left="+screen.width+50+",top="+screen.height+50);
+setTimeout(function(){
+    popupwin.location.href = "https://www.nchu.edu.tw";
+    window.open("","_self");
+    window.focus();
+    popupwin.moveTo((window.screenX||window.screenLeft)+10, (window.screenY||window.screenTop)+50);
+    popupwin.resizeTo(( window.innerWidth || document.body.clientWidth)/2, (window.innerHeight || document.body.clientHeight)/2);
+});
+}
+
+
+</script>
+</html>

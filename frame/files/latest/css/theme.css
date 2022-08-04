@@ -1,0 +1,201 @@
+﻿/*default theme*/
+.fra-dfts{
+  color:#000;
+  background-color:#fff;
+}
+.fra-dfts:hover{
+ background-color:#ddd;
+}
+.fra-dfts:active{
+ background-color:#ccc;
+}
+.fra-dftse:hover{
+ background-color:#f22;
+}
+.fra-dftse:active{
+ background-color:#f55;
+}
+.fra-dftsa{
+ background-color:#ccc;
+}
+.fra-dftsea{
+ background-color:#f55;
+}
+.fra-dftsh{
+ background-color:#ddd;
+}
+.fra-dftseh{
+ background-color:#f22;
+}
+ /*head*/
+.fra-dftd{
+  color:#000;
+}
+ /*container*/
+.fra-dftc{
+  border-color:#000;
+  border-style:solid;
+  border-width:1px;
+}
+/*Alternative element while hideContent*/
+.fra-dftalt{
+ border:solid;
+ border-width:5px;
+}
+ /*frame*/
+.fra-dft{
+  border-style:solid;
+  border-width:1px;
+  border-color:#35F;
+  background-color:#fff;
+}
+
+
+
+/*ocean theme*/
+ /*buttons*/
+.fra-oceb{
+  color:#aaa;
+}
+.fra-oces:hover{
+ background-color:rgba(255,255,255,0.2);
+}
+.fra-oces:active{
+ background-color:rgba(255,255,255,0.4);
+}
+.fra-ocese:hover{
+ background-color:rgba(255,30,30,0.8);
+}
+.fra-ocese:active{
+ background-color:rgba(255,80,80,0.8);
+}
+.fra-ocesh{
+ background-color:rgba(255,255,255,0.2);
+}
+.fra-oceseh{
+ background-color:rgba(255,30,30,0.8);
+}
+.fra-ocesa{
+ background-color:rgba(255,255,255,0.4);
+}
+.fra-ocesea{
+ background-color:rgba(255,80,80,0.8);
+}
+ /*head*/
+.fra-oced{
+  font-weight:bold;
+  color:#aaa;
+}
+ /*container*/
+.fra-ocec{
+  background-color:rgba(128,128,128,0.2);
+  border-style:inset;
+  border-width:2px;
+}
+/*Alternative element while hideContent*/
+.fra-ocealt{
+ border-style:solid;
+ border-width:1px;
+ border-color:#00F;
+ border-radius:10px;
+ background-color:rgba(0,0,255,0.2);
+}
+ /*frame*/
+.fra-oce{
+ border-style:solid;
+ border-width:1px;
+ border-color:#00F;
+ border-radius:10px;
+ background-color:rgba(0,0,255,0.5);
+ background: -moz-linear-gradient(
+     left 
+     ,rgba(0,0,255,0.7)0%
+     ,rgba(0,0,255,0.3)50%
+     ,rgba(0,0,255,0.7)100%
+   ); 
+  background: -webkit-gradient(
+     linear,
+     left,
+     right,
+     color-stop(0%, rgba(0,0,255,0.7)),
+      color-stop(0%, rgba(0,0,255,0.3)),
+     color-stop(100%, rgba(0,0,255,0.7))
+   );
+   background: -webkit-linear-gradient(
+     left
+      ,rgba(0,0,255,0.7)0%
+     ,rgba(0,0,255,0.3)50%
+     ,rgba(0,0,255,0.7)100%
+   );
+   background: -o-linear-gradient(
+     left
+      ,rgba(0,0,255,0.7)0%
+     ,rgba(0,0,255,0.3)50%
+     ,rgba(0,0,255,0.7)100%
+   );
+   background: -ms-linear-gradient(
+     left
+     ,rgba(0,0,255,0.7)0%
+     ,rgba(0,0,255,0.3)50%
+     ,rgba(0,0,255,0.7)100%
+   );
+  background: linear-gradient(
+     to left
+     ,rgba(0,0,255,0.7)0%
+     ,rgba(0,0,255,0.3)50%
+     ,rgba(0,0,255,0.7)100%
+   );
+}
+/*dark theme*/
+.fra-drks{
+  color:#ddd;
+  background-color:#000;
+}
+.fra-drks:hover{
+ background-color:#222;
+}
+.fra-drks:active{
+ background-color:#333;
+}
+.fra-drkse:hover{
+ background-color:#a22;
+}
+.fra-drkse:active{
+ background-color:#b33;
+}
+.fra-drksa{
+ background-color:#333;
+}
+.fra-drksea{
+ background-color:#b33;
+}
+.fra-drksh{
+ background-color:#222;
+}
+.fra-drkseh{
+ background-color:#a22;
+}
+ /*head*/
+.fra-drkd{
+  color:#ddd;
+}
+ /*container*/
+.fra-drkc{
+  border-color:#aaa;
+  border-style:inset;
+  border-width:2px;
+  background-color:#333;
+}
+/*Alternative element while hideContent*/
+.fra-drkalt{
+ border:solid;
+ border-width:5px;
+ border-color:#eee;
+}
+ /*frame*/
+.fra-drk{
+  border-style:solid;
+  border-width:1px;
+  border-color:#DA0;
+  background-color:#000;
+}

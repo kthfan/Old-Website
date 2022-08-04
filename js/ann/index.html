@@ -1,0 +1,269 @@
+<html>
+    <head>
+        <style>
+html{
+  background-color:#000000;
+  font-size:20px;
+  color:#D5D5D5;
+}
+body{
+    font-size:25px;
+    margin: 33px;
+}
+.dark-theme{
+  background-color:#000000;
+  font-size:25px;
+  color:#D5D5D5;
+  /*font-weight:bold;*/
+}
+.bn{
+    width: 50px;
+    height: 30px;
+    font-size:25px;
+    color: #000;
+    background-color: rgba(150,150,255,1);
+    transition: 0.3s;
+  -o-user-select:none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.bn:hover{
+    background-color: rgba(150,255,150,1);
+}
+.bn:active{
+    background-color: rgba(255,150,150,1);
+}
+        </style>
+       
+        <script src="./nann.js"></script>
+        <script>
+function loadJSON(callback, file) {
+    var xobj = new XMLHttpRequest();
+    xobj.overrideMimeType("application/json");
+    xobj.open('GET', file, true);
+    xobj.onreadystatechange = function() {
+        if (xobj.readyState == 4 && xobj.status == "200") {
+            // .open will NOT return a value but simply returns undefined in async mode so use a callback
+            callback(xobj.responseText);
+        }
+    }
+    xobj.send(null);
+}
+        </script>
+    </head>
+    <body>
+        <div>
+            <table>
+                <tr>
+                    <td>X:</td><td>Y:</td>
+                </tr>
+                <tr>
+                    <td>
+                        <textarea id="input_X" class="dark-theme" cols=35 rows=10 wrap="off"></textarea>
+                    </td>
+                    <td>
+                        <textarea id="input_Y" class="dark-theme"  cols=20 rows=10 wrap="off"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td><br></td>
+                </tr>
+                <tr>
+                    <td style="font-size:25px;">
+                        layer:<input id="input_layer" class="dark-theme" size="4" value="4"/>
+                        step:<input id="input_alpha" class="dark-theme" size="4" value="0.5"/>
+                        tol:<input id="input_tol" class="dark-theme"  size="4" value="1e-5"/>
+                        iter:<input id="input_iter" class="dark-theme"  size="4" value="100"/>
+                        
+                    </td>
+                    <td>
+                        <span id="start_bn" class="bn">Start</span>
+                        <span id="predict_bn" class="bn">Predict</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>W:</td><td>b:</td><td>cost:<div id="show_cost"></div></td>
+                </tr>
+                <tr>
+                    <td>
+                        <textarea id="output_W" class="dark-theme" cols=35 rows=10 wrap="off"></textarea>
+                    </td>
+                    <td>
+                        <textarea id="output_b" class="dark-theme"  cols=20 rows=10 wrap="off"></textarea>
+                    </td>
+                </tr>
+            </table>
+            <h2>plot cost</h2><br>
+            <span id="plot_bn" class="bn">plot</span>
+            <span id="log_bn" class="bn">log</span>
+            <span id="clear_bn" class="bn">clear</span>
+            <br>
+            <br>
+            <canvas id="y_axis" width="30" height="500"></canvas>
+            <canvas id="plot_box" width="1000" height="500"></canvas><br>
+            <canvas id="x_axis" width="1030" height="30"></canvas>
+            <br>
+        </div>
+        
+    </body>
+    <script>
+var ann_obj = ANN(), record_list;
+var input_X = document.getElementById("input_X");
+var input_Y = document.getElementById("input_Y");
+var start_bn = document.getElementById("start_bn");
+var show_cost = document.getElementById("show_cost");
+var output_W = document.getElementById("output_W");
+var output_b = document.getElementById("output_b");
+var input_layer = document.getElementById("input_layer");
+var input_alpha = document.getElementById("input_alpha");
+var input_tol = document.getElementById("input_tol");
+var input_iter = document.getElementById("input_iter");
+var plot_box = document.getElementById("plot_box");
+var x_axis = document.getElementById("x_axis");
+var y_axis = document.getElementById("y_axis");
+var plot_bn = document.getElementById("plot_bn");
+var log_bn = document.getElementById("log_bn");
+var clear_bn = document.getElementById("clear_bn");
+var predict_bn = document.getElementById("predict_bn");
+
+function clickPlot(){
+    plot(plot_box,x_axis, y_axis, record_list);
+}
+function clickLog(){
+    plot(plot_box,x_axis, y_axis, ary_func(record_list, Math.log));
+}
+function clickClear(){
+    var ctx = plot_box.getContext("2d");
+    ctx.clearRect(0,0,plot_box.width,plot_box.height);
+}
+function clickPredict(){
+    var p_m = ann_obj.predict(JSON.parse(input_X.value));
+    input_Y.value = printMatrix(p_m);
+}
+function start_run(){
+    ann_obj.layer = parseInt(input_layer.value) || ann_obj.layer;
+    ann_obj.alpha = Number(input_alpha.value) || ann_obj.alpha;
+    ann_obj.tol = Number(input_tol.value) || ann_obj.tol;
+    ann_obj.iter = parseInt(input_iter.value) || ann_obj.iter;
+    ann_obj.X = JSON.parse(input_X.value);
+    ann_obj.Y = JSON.parse(input_Y.value);
+    record_list = ann_obj.run(true);
+    show_cost.innerText = ann_obj.cost();
+    output_W.value = printCell(ann_obj.W_cell);
+    output_b.value = printCell(ann_obj.b_cell);
+}
+function ary_func(ary,func){
+  var len = ary.length,res=[];
+  for(var i=0;i<len;i++){
+    res.push(func(ary[i]));
+  }
+  return res;
+}
+function dumpResult(){
+    var res = {W_cell:ann_obj.W_cell, b_cell:ann_obj.b_cell};
+    if(record_list !==null) res.record_list = record_list;
+    return JSON.stringify(res);
+}
+function printMatrix(mat){
+    var res = "";
+    var rows = mat.length;
+    var cols = mat[0].length;
+    res += "[";
+    res += "[";
+    for(var j=0;j<cols-1;j++){
+        res += mat[0][j]+",\t";
+    }
+    res += mat[0][cols-1];
+    res += "]";
+    if(rows-1>0) res += ",\n";
+    for(var i=1;i<rows-1;i++){
+        res += " [";
+        for(var j=0;j<cols-1;j++){
+            res += mat[i][j]+",\t";
+        }
+        res += mat[i][cols-1];
+        res += "],\n"
+    }
+    if(rows-1>0){
+        res += " [";
+        for(var j=0;j<cols-1;j++){
+            res += mat[rows-1][j]+",\t";
+        }
+        res += mat[rows-1][cols-1];
+        res += "]";
+    }
+    res += "]";
+    return res;
+}
+function printCell(cell){
+    var layers = cell.length;
+    var res = "";
+    res += "[";
+    for(var i=1;i<layers;i++){
+        res += "\n";
+        res += printMatrix(cell[i]);
+        res += "\n"
+    }
+    res += "]";
+    return res;
+}
+function plot(canv, x_axis, y_axis, list){
+    var ctx = canv.getContext("2d");
+    var ctx_x = x_axis.getContext("2d");
+    var ctx_y = y_axis.getContext("2d");
+    var max = Number.NEGATIVE_INFINITY;
+    var min = Number.POSITIVE_INFINITY;
+    var width = canv.width;
+    var height = canv.height;
+    var range;
+    var trans_x, trans_y;
+    for(var i=0;i<list.length;i++){
+        var tmp = list[i];
+        max = max>tmp?max:tmp;
+        min = min<tmp?min:tmp;
+    }
+    range = max - min;
+    var tmp = list[0];
+    trans_x = 0;
+    trans_y = (tmp-min)/range;
+    trans_y = height - trans_y*height;
+    ctx_x.clearRect(0,0,x_axis.width,x_axis.height);
+    ctx_y.clearRect(0,0,y_axis.width,y_axis.height);
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = "#ccc";
+    ctx_x.fillStyle = "#ccc";
+    ctx_y.fillStyle = "#ccc";
+    ctx.beginPath();
+    ctx.moveTo(trans_x, trans_y);
+    for(var i=1,cumx=0,cumy=0;i<list.length;i++){
+        var tmp = list[i];
+        trans_x = i/list.length*width;
+        trans_y = (tmp-min)/range;
+        trans_y = height - trans_y*height;
+        ctx.lineTo(trans_x, trans_y);
+        if(cumx*100 <= trans_x){
+            cumx++;
+            ctx_x.fillText(String(i), trans_x+y_axis.width, x_axis.height);
+        }
+        if(cumy*100 <= trans_y){
+            cumy++;
+            ctx_y.fillText(String(tmp), 0, trans_y);
+        }
+    }
+    ctx.stroke();
+    ctx.closePath();
+}
+loadJSON(function(str){
+    var obj = JSON.parse(str);
+    input_X.value = printMatrix(obj.X);
+    input_Y.value = printMatrix(obj.Y);
+}, "./datasets/example.json");
+start_bn.onclick = start_run;
+predict_bn.onclick = clickPredict;
+plot_bn.onclick = clickPlot;
+log_bn.onclick = clickLog;
+clear_bn.onclick = clickClear;
+    </script>
+</html>

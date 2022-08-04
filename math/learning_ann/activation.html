@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Activation</title>
+        <link rel="stylesheet" type="text/css" href="./index.css" />
+    </head>
+    <body>
+        <div id="app">
+            <div id="top-bar">
+                <button class="top-bn" id="next-bn">next step</button>
+                <div>
+                    Input: <input class="top-input" type="text" id="input" value="0"/>
+                </div>
+                
+                <fieldset>
+                    <legend>Functions:</legend>
+                    <input type="radio" id="sigmoid" name="activation" value="sigmoid" checked> <label for="sigmoid">sigmoid</label>
+                    <input type="radio" id="tanh" name="activation" value="tanh"> <label for="tanh">tanh</label>
+                    <input type="radio" id="relu" name="activation" value="relu"> <label for="relu">relu</label>
+                </fieldset>
+            </div>
+            <div id="main-container">
+                <canvas id="main-canvas"></canvas>
+            </div>
+        </div>
+    </body>
+    <script src="./ann-graph.js"></script>
+    <!-- <script src="./index.js"></script> -->
+    <script>
+
+let topBarElem = document.getElementById("top-bar");
+let mainCanvasElem = document.getElementById("main-canvas");
+let nextBnElem = document.getElementById("next-bn");
+let inputElem = document.getElementById("input");
+let sigmoidElem = document.getElementById("sigmoid");
+let tanhElem = document.getElementById("tanh");
+let reluElem = document.getElementById("relu");
+let mainCtx = mainCanvasElem.getContext('2d');
+
+
+
+let canvasManager = new CanvasManager(mainCanvasElem);
+let funcQueue = [];
+
+let model = new Sequential([
+    new Input([1]),
+    new Activation('sigmoid')    
+]);
+// funcQueue = [...funcQueue, ...model.forward([30.0,20.0,0.00])];
+
+
+function startForward(){
+    canvasManager.removeNode(model);
+    let actElemList = [sigmoidElem, tanhElem, reluElem];
+    let actName = actElemList.map(e=>e.id)[actElemList.map(e=>e.checked).indexOf(true)];
+    
+    model = new Sequential([
+        new Input([1]),
+        new Activation(actName)    
+    ]);
+    canvasManager.addNode(model, {x:100, y:100});
+
+    let val = Number.parseFloat(inputElem.value); 
+    if(Number.isNaN(val)) return;
+    funcQueue = model.forward([val]);
+}
+
+nextBnElem.addEventListener('click', ()=>{
+    if(funcQueue.length === 0){
+        startForward();
+    }
+    func = funcQueue.shift();
+    mainCtx.clearRect(0, 0, mainCanvasElem.width, mainCanvasElem.height);
+    func();
+    canvasManager.update();
+});
+
+window.onresize = ()=> {
+    mainCanvasElem.width = window.innerWidth*1.2;
+    mainCanvasElem.height = window.innerHeight;
+    canvasManager.update();
+}
+window.onresize();
+
+    </script>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

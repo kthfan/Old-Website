@@ -1,0 +1,31 @@
+<html>
+<head>
+<script src="WebWorkerLoop.js"></script>
+</head>
+
+<body>
+<script>
+var count = 0;
+var myLoop = WebWorkerLoop({iter:10000, iter_script_path:"test_iter.js"});
+myLoop.onfinish = function(){
+  if(count==0){
+    myLoop.integrate_script_path = "test_int.js";
+    console.log("Run 2:");
+    myLoop.run();
+  }else if(count==1){
+    console.log("Run 3:");
+    myLoop.run({onmessage:function(data){
+      console.log("Send back data:", data);
+    }});
+  }else if(count==2){
+    myLoop.forceTerminate();
+  }
+  count++;
+}
+console.log("Run 1:");
+myLoop.run();
+
+
+</script>
+</body>
+</html>

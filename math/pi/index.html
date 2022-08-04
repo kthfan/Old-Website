@@ -1,0 +1,43 @@
+<html>
+<head>
+    <meta charset="UTF-8"></meta>
+    <title>pi</title>
+    <script src="lambertw.js"></script>
+    <script src="big.js"></script>
+    <script src="pi.js"></script>
+</head>
+<body>
+<table>
+    <tr>
+        <td>
+            <input id="iter_txt"/>
+            <button id="caut_bn">計算</button>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div id="show_div">3.14</div>
+        </td>
+        
+    </tr>
+</table>
+<script>
+var iter_txt = document.getElementById("iter_txt");
+var caut_bn = document.getElementById("caut_bn");
+var show_div = document.getElementById("show_div");
+
+caut_bn.onclick=function(){
+    var myWorker = new Worker("worker.js");
+    var n=parseInt(iter_txt.value);
+    if(isNaN(n)) return;
+    myWorker.onmessage = function(e) {
+        if(e.data==="end"){
+            myWorker.terminate();
+        }else   show_div.innerText=e.data;
+    }
+    myWorker.postMessage([n]);
+}
+
+</script>
+</body>
+</html>

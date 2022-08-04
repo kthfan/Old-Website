@@ -1,0 +1,12 @@
+
+<IfModule dir_module>
+  DirectoryIndex index.html index.php
+</IfModule>
+
+LoadModule php7_module "c:/php/php7apache2_4.dll"
+AddType application/x-httpd-php .php
+PHPIniDir "c:/php/"
+
+ServerName 127.0.0.1
+
+#Modified by followjohn.

@@ -1,0 +1,103 @@
+﻿<html>
+<head>
+<title>Frame</title>
+
+<style>
+
+#prev-div{
+  margin-left: 60px;
+  margin-top: 30px;
+}
+#indiv-div{
+  margin-left: 60px;
+  margin-top: 30px;
+}
+.downloads-list{
+  list-style-type: none;
+}
+.downloads-href{
+  display: block;
+  font:14px/16px Arial, sans-serif;
+}
+.downloads-href:link{
+  color: #aaa;
+}
+.vice-title{
+  margin-top: 10px;
+  font:16px Arial, sans-serif;
+}
+</style>
+
+<link rel=stylesheet type="text/css" href="../files/latest/css/base.css">
+<link rel=stylesheet type="text/css" href="../files/latest/css/frameEx.css">
+<link rel=stylesheet type="text/css" href="../files/latest/css/theme.css">
+<link rel=stylesheet type="text/css" href="../files/latest/css/menu.css">
+<link rel=stylesheet type="text/css" href="../css/gen.css">
+<link rel=stylesheet type="text/css" href="../css/menu-style.css">
+
+<script src="../files/latest/js/main.js"></script>
+<script src="../files/latest/js/frameEx.js"></script>
+<script src="../files/latest/js/event.js"></script>
+<script src="../files/latest/js/theme.js"></script>
+<script src="../files/latest/js/menu.js"></script>
+<script src="../js/lib.js"></script>
+
+
+
+</head>
+
+<body>
+<div id="top-nav-div" class="fixed-elem">
+  <div id="title-div">
+    <a class="logo" href="../index.html">Frame</a>
+  </div>
+</div>
+
+<div id="main-div">
+  <div id="indiv-div" class="downloads-list">
+    <h2 class="lined-title">Individual Files</h2>
+    <div class="vice-title">JS</div>
+    <a class="downloads-href" href="main.js">main.js</a>
+    <a class="downloads-href" href="frameEx.js">frameEx.js</a>
+    <a class="downloads-href" href="theme.js">theme.js</a>
+    <a class="downloads-href" href="theme.js">event.jsa>
+    <a class="downloads-href" href="theme.js">menu.js</a>
+    <div class="vice-title">CSS</div>
+    <a class="downloads-href" href="base.css">base.css</a>
+    <a class="downloads-href" href="frameEx.css">frameEx.css</a>
+    <a class="downloads-href" href="theme.css">theme.css</a>
+    <a class="downloads-href" href="menu.css">menu.css</a>
+  </div>
+  <div id="prev-div" class="downloads-list">
+    <h2 class="lined-title">Previous Versions</h2>
+  </div>
+</div>
+
+
+<script src="../js/header.js"></script>
+<script>
+;(function(){
+  
+  var topMenuList = [gen_a("Downloads", "../downloads/index.html"),
+                    gen_a("Tutorials", "../tutorials/index.html") ];
+  topMenu.buildByList(topMenuList);
+  
+  topMenu.menuElem.id = "top-menu";
+  topMenu.forEach(function(elem){
+    elem.classList.add("top-menu-elem");
+  });
+  function setSomeElementsSize(){
+    var docWidth = document.documentElement.clientWidth;
+    title_div.style.width = docWidth;
+    topMenu.width = docWidth;
+    top_nav_div.style.width = document.documentElement.clientWidth;
+  }
+  window.addEventListener("resize", setSomeElementsSize);
+})();
+
+
+
+
+</script>
+</body>
+</html>

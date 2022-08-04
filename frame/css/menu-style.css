@@ -1,0 +1,38 @@
+.menu-darkblue{
+  background-color: rgb(0,0,150);
+  color:#aaa;
+}
+.menu-elem-darkblue{
+  margin: 5px;
+  transition: 0.3s;
+}
+.menu-elem-darkblue:hover{
+  background-color: rgb(30,30,200);
+  transition: 0.3s;
+}
+.menu-elem-darkblue:link{
+  color: #aaa;
+}
+._menu-moreclk-darkblue{
+  background-color: rgb(20,20,20);
+  transition: 0.3s;
+}
+._menu-moreclk-darkblue:hover{
+  background-color: rgb(20,20,60);
+  transition: 0.3s;
+}
+.menu-black{
+  background-color: rgb(20,20,20);
+  color:#aaa;
+}
+.menu-elem-black{
+  color: #aaa;
+  padding: 0 16px;
+}
+.menu-elem-black:link{
+  color:#aaa;
+  text-decoration: none;
+}
+.menu-elem-black:hover{
+  background-color: rgb(0,0,0);
+}

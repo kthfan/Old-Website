@@ -1,0 +1,149 @@
+html{
+  scrollbar-color: #777 #113;
+}
+#title-div{
+  background-color:#005;
+  color:#ccf;
+  padding-top: 20px;
+  padding-left: 16px;
+   -o-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#top-nav-div{
+  background-color:#002;
+  top:0;
+  left:0;
+} 
+#top-menu{
+  position: absolute;
+  line-height: 2;
+  letter-spacing: 4px;
+  font-family: "Segoe UI",Arial,sans-serif;
+}
+#left-menu{
+  position: fixed;
+  font-size: 16px;
+  font-family: Verdana,sans-serif;
+  line-height: 1.5;
+  scrollbar-color: #777 #113;
+}
+
+
+#main-div{
+  position: absolute;
+}
+.fixed-elem{
+  position: fixed;
+  z-index: 10;
+}
+.top-menu-elem{
+  text-align: center;
+  text-decoration: none;
+}
+.logo {
+    font-family: fontawesome;
+    text-decoration: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 37px;
+    letter-spacing: 3px;
+    display: block;
+}
+.logo:link{
+    color:#88f;
+}
+.lined-title{
+  font: 16px Kalinga;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+html{
+  background-color: #000;
+  color: #ccc;
+}
+body{
+  font-size:25px;
+}
+a {
+  background-color: transparent;
+}
+/*dark theme*/
+.fra-dfts{
+  color:#ddd;
+  background-color:#000;
+}
+.fra-dfts:hover{
+ background-color:#222;
+}
+.fra-dfts:active{
+ background-color:#333;
+}
+.fra-dftse:hover{
+ background-color:#a22;
+}
+.fra-dftse:active{
+ background-color:#b33;
+}
+.fra-dftsa{
+ background-color:#333;
+}
+.fra-dftsea{
+ background-color:#b33;
+}
+.fra-dftsh{
+ background-color:#222;
+}
+.fra-dftseh{
+ background-color:#a22;
+}
+ /*head*/
+.fra-dftd{
+  color:#ddd;
+}
+ /*container*/
+.fra-dftc{
+  border-color:#aaa;
+  border-style:solid;
+  border-width:1px;
+  background-color:#333;
+}
+/*Alternative element while hideContent*/
+.fra-dftalt{
+ border:solid;
+ border-width:5px;
+ border-color:#eee;
+}
+ /*frame*/
+.fra-dft{
+  border-style:solid;
+  border-width:1px;
+  border-color:#08C;
+  background-color:#000;
+}
+::-webkit-scrollbar{
+  background-color: #113;
+}
+::-webkit-scrollbar-button {
+  width: 0px;
+  height: 0px;
+}
+::-webkit-scrollbar-thumb {
+  background: #777;
+  
+  border-radius: 50px;
+}
+::-webkit-scrollbar-track {
+  background: #113;
+  border-radius: 53px;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+

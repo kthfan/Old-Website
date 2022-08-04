@@ -1,0 +1,71 @@
+<html>
+<head>
+    <title>11100</title>
+    <style>
+        #main_div{
+            width: 500px;
+            margin: 50px;
+            font-size: 25px;
+            font-family: Verdana,sans-serif;
+        }
+        #run_bn{margin: 10px;}
+    </style>
+    <script src="../js/decimal.js"></script>
+    <script src="./11100.js"></script>
+</head>
+<body>
+<div id="main_div">
+    <input id="n_input" size="5" style="font-size:25px" value="1"></input> &times <span id="show_span">10</span> = <span id="res_span">10</span></br>
+    <button id="run_bn" style="width:80px; height:40px; font-size:25px">run</button>
+</div>
+<script>
+var main_div = document.getElementById("main_div");
+var show_span = document.getElementById("show_span");
+var res_span = document.getElementById("res_span");
+var run_bn = document.getElementById("run_bn");
+var n_input = document.getElementById("n_input");
+var runid = BigInt(0);
+var last_input = null;
+n_input.value = "1";
+function window_resize(){
+    main_div.style.marginLeft = window.innerWidth/2-main_div.offsetWidth/2  + document.documentElement.scrollLeft;
+    main_div.style.marginTop = window.innerHeight/2-main_div.offsetHeight/2 + document.documentElement.scrollTop;
+}
+//window.onresize = window_resize;
+//window_resize();
+n_input.onkeydown = function(e){
+    e = e || window.event;
+    if(e.key ==="Enter") run_bn.onclick();
+}
+run_bn.onclick = function(){
+    //if(running) return;
+    //running = 1;
+    var num = n_input.value.trim();
+    if(last_input == num) return;
+    last_input = num;
+    if(!Number.isInteger(Number(num)) || isNaN(Number(num)) || isNaN(parseInt(num)) || parseInt(num) <=0 ) {
+        show_span.innerText = "?";
+        res_span.innerText = "?";
+        //running = 0;
+
+        return;
+    }
+    show_span.innerText = "running...";
+    res_span.innerText = "running...";
+    var myWorker = new Worker("worker.js");
+    myWorker.onmessage = function(e) {
+        if(e.data[2] != String(runid)) return;
+        
+       show_span.innerText = e.data[0];
+        res_span.innerText = e.data[1];
+        last_input=null;
+        //running = 0;
+    }
+    Decimal.precision = parseInt(num)+1;
+    myWorker.postMessage([num, String(++runid)]);
+    
+}
+</script>
+
+</body>
+</html>

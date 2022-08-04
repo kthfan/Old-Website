@@ -1,0 +1,722 @@
+﻿<html>
+<head>
+<meta charset="UTF-8">
+<meta id="h-p" content='/* 
+ * %%[script name]
+ *  運行名稱為[script name]的腳本。
+ * %[command]
+ *  執行特殊命令[command]。
+ *  [command]:
+ *   clear：等同"清空"按鈕。
+ *   fontsize [size]：
+ *     更改字體大小為[size]。
+ *   clearcmds：清空所有指令記憶。
+ *   save：等同"儲存"按鈕。
+ *   run：等同"運行"按鈕。
+ *   delete：等同"刪除"按鈕。
+ *   title [text]：
+ *     將"標題"內文字設為[text]。
+ *   list：列出"標題清單"中的所有標題。 
+ *   list [script name]：
+ *     選擇"標題"為[script name]的選項。
+ *   color [color]：
+ *     改變外觀顏色；[color]有black、white、gray、green。
+ *   cmds [n]：
+ *     列出最後[n]個指令。
+ *   cmds [start] [end]：
+ *     列出後面第[start]到第[end]之間的指令。
+ *   match [state]：
+ *     自動列出可用命令；[state]為on、off。
+ * #
+ *  刪除腳本區所有文字。
+ * #[m]
+ *  從腳本區最後刪除長度為[m]的字串。
+ * ##
+ *  在腳本區最後新增換行字元"\n"。
+ * ##[text]
+ *  在腳本區最後新增字串[text]。
+ * #[n]#
+ *  刪除第[n]行。
+ * #[n]#[m]
+ *  在第[n]行後刪除長度為[m]的字串(不會刪除整行)。
+ * #[n]##
+ *  在第[n]行後新增換行字元"\n"(行數不夠會補齊)。
+ * #[n]##[text]
+ *  在第[n]行後新增字串[text](行數不夠會補齊)。
+ * #[n]#%[text]
+ *  以[text]取代第[n]行內容(行數不夠會補齊)。
+ */'>
+<meta id="d-s" content='/* 
+ *   左手邊是控制台區，用來顯
+ * 示運行結果，下方">>"後可以
+ * 輸入命令，點擊右方"執行"或
+ * 按下Enter來執行命令，點擊
+ * "清空"清除控制台內的所有內
+ * 容。
+ * 
+ *   右方是腳本區，可以存放一
+ * 小段程式碼，上方五個元件分
+ * 別是"標題清單"、"標題"、
+ * "儲存"、"運行"、"刪除"。
+ * "標題清單"：所有已儲存的腳
+ *            本標題。
+ * "標題"：腳本的標題(名稱)。
+ * "儲存"：將"標題"以及下面的
+ *         腳本存放在瀏覽器的
+ *         本地儲存空間(localStorage)。
+ * "運行"：執行腳本。(注意)是
+ *         執行"下方"的程式碼
+ *         而不是"標題"對應的
+ *         程式碼。
+ * "刪除"：刪除腳本。
+ *   儲存時腳本一定會被存放在
+ * "標題清單"內，但不一定會被
+ * 存放在瀏覽器的儲存空間，因
+ * 為瀏覽器可能不支援，所以建
+ * 議重要的腳本應該另存檔案。
+ *
+ * [ctrl+S]是"儲存"的快捷鍵。
+ * 
+ *   左邊控制台區有記憶指令的功
+ * 能，按↑(ArrowUp)查詢上一個
+ * 指令，↓(ArrowDown)往回查詢
+ * 下一個指令，記憶上限是999個
+ * ，這些指令會被存放在瀏覽階段
+ * 儲存空間(sessionStorage)。
+ * 
+ *   按Tab可以查詢命令，欲退出
+ * 則可以按Esc或點擊其他地方，
+ * ↑(ArrowUp)↓(ArrowDown)來
+ * 控制命令列表。
+ *
+ * 可以在控制台區內輸入特殊指令。
+ * 
+ * 字體與各元件會隨視窗大小改變。
+ * 
+ * sessionStorage與localStorage
+ * 的鍵值是"__INTERPRETER_STORAGE__"。
+ * 使用eval函數執行指令。
+ * 設定__INTERPRETER_STORAGE__變數會影響使用。
+ */'>
+<style>
+.w-g{
+  background-color:#FFF;
+  color:#000;
+}
+.w-w{background-color:none;}
+.n-w{
+  background-color:#080;
+}
+.n-g{
+  background-color:#090;
+  color:#000;
+}
+.g-g{
+  background-color:#BBB;
+  color:#000;
+}
+.b-w{
+  background-color:#AAA;
+}
+.b-g{
+  background-color:#000;
+  color:#CCC;
+}
+.g-i{
+  font-size:22;
+  contenteditable="true";
+}
+.g-t{
+  font-weight:bold;
+  font-size:25;
+  contenteditable="true";
+}
+.o-r{
+  height:30;
+  font-size:15;
+}
+.l-d{
+  float:left;
+  padding:5;
+  resize:both;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  display: block;
+  overflow:auto;
+}
+#s-h{position:absolute;display:none;z-index:1;}
+#t-k{font-size:25;}
+div{
+  resize:horizontal;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  display:block;
+  overflow:auto;
+}
+</style>
+<title>EvilJS</title>
+</head>
+<body class="b-g">
+<span class="l-d" id="d-2">
+<textarea id="r-f" class="g-t b-g" wrap="off" readonly="readonly" placeholder='//這是控制台~
+//在下方">>"後輸入指令吧!
+//點擊"執行"或按下Enter來執行指令!!
+//輸入%descript查詢說明。
+//輸入%help查詢特殊指令用法。'></textarea>
+<div id="d-1">
+<span id="t-k" title="命令提示字元">&gt;&gt;</span><input id="p-f" class="g-i b-g">
+<button id="s-o" class="o-r b-w">執行</button>
+<button id="c-1" class="o-r b-w">清空</button>
+</div>
+</span>
+<span class="l-d" id="d-3">
+<div id="d-4">
+<select id="l-s" class="o-r b-g">
+</select>
+<input id="s-t" class="g-i b-g">
+<button id="s-a" class="o-r b-w">儲存</button>
+<button id="r-u" class="o-r b-w">運行</button>
+<button id="c-2" class="o-r b-w">刪除</button>
+</div>
+<textarea id="s-c" class="g-t b-g" wrap="off" placeholder='//這裡是腳本區..
+//Start Coding Now!'></textarea>
+</span>
+<select id="s-h" class=" b-g" size=6></select>
+<script type="text/javascript">
+var __INTERPRETER_STORAGE__=(function(){
+  var t,s;
+  try {
+    s=window.sessionStorage;
+    t=(s?s:{})
+    ["__INTERPRETER_STORAGE__"]
+    ?JSON.parse(s["__INTERPRETER_STORAGE__"])
+    :[[],-1];
+  }catch(e) {s=s?s:{};t=[[],-1];}
+  var G=t[0]?t[0]:[],L=t[1]?t[1]:-1,Z=function(){
+    if(!s) return;
+    var f=1;
+    while(f){
+      try{
+        s["__INTERPRETER_STORAGE__"]
+        =JSON.stringify({0:G,1:L});
+      }catch(e){
+        G.shift(); continue;
+      }
+      f=0;
+    } 
+  }; Z();
+  return function(a,b,c){
+    if(a>=0){
+      if(b!=undefined){
+        if(G.length<1000){G.push(b);}
+        else{G.shift();G.push(b);}
+        L=G.length; 
+      }else{
+        c=G[((a%2?++L:--L)>=G.length?--L:L)<0?++L:L]; 
+        Z();
+        return c==undefined?"":c;
+      }
+    }else if(a==-2&&c)
+      G=[],L=-1;
+    Z();
+    return a==-1?L:null;
+  }
+})();
+document.fontsize=function(e){
+  var a=e*22/25,b=e*3/5,c=e*4/5,f=function(n,g){
+    document.getElementById(n).style.fontSize=g;
+  };f("t-k",e);f("r-f",e);f("s-c",e);f("p-f",a);
+  f("s-t",a);f("s-o",b);f("c-1",b);f("l-s",c);
+  f("s-a",b);f("r-u",b);f("c-2",b);f("s-h",a);
+}
+window.onresize=function(){
+  var f=function(n){return document.getElementById(n)}
+  ,a= f("d-1")
+  ,b= f("d-2")
+  ,c= f("d-3")
+  ,d= f("d-4")
+  ,t= f("s-t")
+  ,e= f("s-c")
+  ,p= f("p-f")
+  ,r= f("r-f")
+  ,o=f("s-o")
+  ,l=f("c-1")
+  ,s=f("l-s")
+  ,v=f("s-a")
+  ,u=f("r-u")
+  ,z=f("c-2")
+  ,h=document.body.clientHeight,y=h-20
+  ,w=document.body.clientWidth,x=w/5-8;
+  document.fontsize((h>w?w:h)/32);
+  b.style.width=x*3;
+  b.style.height=y;
+  c.style.width=x*2+3;
+  c.style.height=y;
+   y=h/20,x=w/(1.03)*3/5;
+  r.style.height=18*y-8;
+  r.style.width=x;
+  a.style.width=x-5;
+  a.style.height=y+8;
+   x=x*1.1-65;
+  p.style.width=6*x/10;
+  o.style.width=x/10;
+  l.style.width=x/10;
+   x=w/(1.03)*2/5;
+  d.style.width=x;
+  d.style.height=y+8;
+  e.style.width=x;
+  e.style.height=18*y-8;
+   x=x*1.1-65;
+  t.style.width=x/4;
+  s.style.width=x/8;
+  v.style.width=x/9;
+  u.style.width=x/9;
+  z.style.width=x/9;
+};
+window.onresize();
+document.getElementById("l-s").onclick=function(){
+  if(!this.length) return;
+  var i=this.selectedIndex;
+  document.getElementById("s-t").value=this[i].text;
+  document.getElementById("s-c").value=this[i].value;
+};
+(function(){
+  var L,S=document.getElementById("l-s")
+    ,R=document.getElementById("r-f");
+  try{L=window.localStorage?localStorage:{};}catch(e){L={};}
+  if(!L["__INTERPRETER_STORAGE__"])
+    L["__INTERPRETER_STORAGE__"]='{}';
+  try {L=JSON.parse(L["__INTERPRETER_STORAGE__"]);}
+  catch(e) {L={};}
+  if(L.constructor!==Object) L={};
+  for(var e in L){
+    S.options.add(new Option(e,L[e]));
+  }
+  if(!S.length)
+    S.options.add(new Option("default",'"Hello, World!"'));
+  document.getElementById("s-t").value=S[0].text;
+  S.onclick();
+  R.scrollTop=R.scrollHeight;
+})();
+document.getElementById("l-s").onchange
+  =document.getElementById("l-s").onclick;
+document.getElementById("c-1").onclick=function(){
+  document.getElementById("r-f").value="";
+};
+document.getElementsByTagName("body")[0].onclick=function(){
+  var S=document.getElementById("s-h");
+  if(S.D==true)
+    S.style.display="none"
+    ,S.D=0;
+}
+document.getElementById("p-f").onclick=function(){
+  event.stopPropagation();
+}
+document.getElementById("s-h").onclick=function(){
+  if(event.stopPropagation)
+    event.stopPropagation();
+  if(this.selectedIndex==-1) return;
+  var P=document.getElementById("p-f"),t=P.value
+    ,p=P.selectionStart,i,s;
+  if(this.s[1]==undefined) i=this.s[0];
+  else i=this.s[1]+1;
+  s=t.substring(0,i)+this[this.selectedIndex].text
+  P.value=s+t.substring(p,t.length);
+  P.focus();
+  P.setSelectionRange(s.length,s.length);
+}
+document.getElementById("s-h").b=function(P,E){
+  var K=E.key;
+  if(K=="Enter"){
+    if(this.style.display=="none")return 1;
+    this.onclick();
+    this.style.display="none";
+    E.preventDefault();
+  }else if(K=="ArrowDown"||K=="Down"){
+    if(this.style.display=="none")return 1;
+    this.selectedIndex++;
+  }else if(K=="ArrowUp"||K=="Up"){
+    if(this.style.display=="none")return 1;
+    this.selectedIndex--;
+  }else if(K=="Tab"){
+    this.a(P);
+    E.preventDefault();
+  }else if(K=="Escape"){
+    this.style.display="none";
+    this.D=0;
+  }else if(K=="Backspace"){
+    var p=P.selectionStart-1;
+    if(!p){
+      this.style.display="none";
+      this.D=0;
+      return;
+    }else this.a(P,P.value,p);
+  }else if(K.length==1)
+    this.a(P,P.value+K,P.selectionStart+1);
+  return 0;
+}
+document.getElementById("s-h").a=function(P,t,p){
+  t=t==undefined?P.value:t,p=p==undefined?P.selectionStart:p;
+  var O,C,i=p-1,L=t.length
+    ,E={"\"":"\"","\'":"\'",")":"(","]":"[","}":"{"}
+    ,F=function(){
+      document.getElementById("s-h").style.display="none";
+    };
+  while(i>=0){
+    if(C=E[t[i]]){
+      while(i-->=0&&t[i]!=C);
+      i--;continue;
+    }
+    if(O==undefined&&t[i]=="."){O=i;}
+    if(!/[a-zA-Z0-9_.]/.test(t[i])){i++;break;}
+    i--;
+  }
+  if(O==undefined){
+    C=t.substring(i,p);
+    this.s=[i];
+    O=window;
+  }else{
+    C=t.substring(O+1,p);
+    this.s=[i,O];
+    try{O=eval(t.substring(i,O));}catch(e){O=undefined;}
+  }
+  if(O==undefined||O==null) return;
+  this.length=0;
+  t={};
+  while(O!=null){
+    L=Object.getOwnPropertyNames(O);
+    for(var Q in L) t[L[Q]]=null;
+    for(var Q in O) t[Q]=null;
+    O=Object.getPrototypeOf(O);
+  }
+  L=C.length;
+  for(var Q in t){
+    if(Q.substring(0,L)==C){
+      O=new Option(Q);
+      this.options.add(O);
+      O.onclick=F;
+    }
+  }
+  this.D=1;
+  if(this.length==0){this.style.display="none";return;}
+  this.style.display="block";
+  this.style.top=P.offsetTop-this.offsetHeight;
+  this.style.left=P.offsetLeft;
+}
+document.getElementById("s-a").onclick=function(){
+  var h=document.getElementById("s-t")
+    ,a=document.getElementById("s-c")
+    ,s=document.getElementById("l-s")
+    ,l=s.length
+    ,t=h.value
+    ,L,I;
+  try{L=window.localStorage?localStorage:{};}catch(e){L={};}
+  I=L;
+  if(!L["__INTERPRETER_STORAGE__"])
+    L["__INTERPRETER_STORAGE__"]='{}';
+  try {L=JSON.parse(L["__INTERPRETER_STORAGE__"]);}
+  catch(e) {L={};}
+  if(L.constructor!==Object) L={};
+  L[t]=a.value;
+  try{I["__INTERPRETER_STORAGE__"]=JSON.stringify(L);}
+  catch(e){alert("Storage limit reached.");}
+  for(var i=0;i<l;i++){
+    if(t==s[i].text){
+      s[i].value=a.value;
+      return;
+    }
+  }
+  s.options.add(new Option(t,a.value));
+  l++;
+  for(var i=0;i<l;i++){
+    if(t==s[i].text){
+      s.selectedIndex=i;
+      h.value=t;
+      return;
+    }
+  }
+};
+document.getElementById("s-c").onkeydown=function(e){
+  if(e.ctrlKey&&(e.key=="S"||e.key=="s"))
+    e.preventDefault(),
+    document.getElementById("s-a").onclick();
+};
+document.getElementById("s-t").onkeydown
+  =document.getElementById("s-c").onkeydown;
+document.getElementById("r-u").onclick=function(){
+  document.getElementById("r-f").value+=">>";
+  try {
+    document.getElementById("r-f").value+=
+      eval(document.getElementById("s-c").value);
+  } catch(e) {
+    document.getElementById("r-f").value+=e;
+  }
+  document.getElementById("r-f").value+="\n";
+  document.getElementById("r-f").scrollTop
+    =document.getElementById("r-f").scrollHeight;
+};
+document.getElementById("c-2").onclick=function(){
+  var L,S=document.getElementById("l-s");
+  if(!S.length) return; 
+  try{L=window.localStorage?localStorage:{};}catch(e){L={};}
+  var I=L,i=S.selectedIndex;
+  if(!L["__INTERPRETER_STORAGE__"])
+    L["__INTERPRETER_STORAGE__"]='{}';
+  try {L=JSON.parse(L["__INTERPRETER_STORAGE__"]);}
+  catch(e) {L={};}
+  if(L.constructor!==Object) L={};
+  delete L[S[i].text];
+  try{I["__INTERPRETER_STORAGE__"]=JSON.stringify(L);}
+  catch(e){alert("Storage limit reached.");}
+  S.remove(i);
+  S.onclick();
+};
+document.getElementById("s-c").a=function(e){
+  var U="Usage: # #m ## ##text #n# #n#m #n## #n##text #n#%text",R=document.getElementById("r-f");
+  if(e[1]=="#"){
+    var k=e.indexOf("#",2);
+    var t=e.substring(2);
+    if(t){
+      this.value+=t;
+    }else{
+      this.value+="\n";
+    }
+  }else{
+    var j=e.indexOf("#",2);
+    if(j==-1){
+      var t=e.substring(1),n=Number(t);
+      if(t){
+        if(isNaN(n)){R.value+=U;return;}
+        var s=this.value;
+        n=s.length-n;
+        n=n<0?0:n;
+        this.value=s.substring(0,n);
+      }else{
+        this.value="";
+      }
+    }else{
+      if(j==1){
+        var t=e.substring(2);
+        if(t) this.value+=t;
+        else this.value+="\n";
+      }else{
+        var n=Number(e.substring(1,j)),k=e.indexOf("#",j+1)
+          ,L=this.value.split("\n"),I=L.length;
+        if(isNaN(n)||n<0){R.value+=U;return;}
+        n=parseInt(n);
+        if(k==-1){
+          var t=e.substring(j+1);
+          if(t){
+            if(t[0]=="%"){
+              if(n>=I){
+                I=n-I;
+                for(var i=0;i<=I;i++)L.push("");
+              }
+              L[n]=t.substring(1); this.value=L.join("\n");
+            }else{
+              var m=Number(t);
+              if(isNaN(m)||m<0){R.value+=U;return;}
+              if(n>=I)return;
+              var J=L[n].length;
+              m=parseInt(m);
+              m=J-m; m=m<0?0:m;
+              L[n]=L[n].substring(0,m);
+              this.value=L.join("\n");
+            }
+          }else{
+            var res="";
+            I--;
+            for(var i=0;i<I;i++){
+              if(n==i)continue;
+              res+=L[i]+"\n";
+            }
+            if(n<I) res+=L[I]+"\n";
+            this.value=res.substring(0,res.length-1);
+          }
+        }else{
+          if(j+1==k){
+            var t=e.substring(k+1);
+            if(n>=I){
+              I=n-I;
+              for(var i=0;i<=I;i++)L.push("");
+            }
+            if(t) L[n]+=t;
+            else {
+              if(n<I) L[n]="\n"+L[n];
+            }
+            this.value=L.join("\n");
+          }else{R.value+=U;return;}
+        }
+      }
+    }
+  }
+}
+document.getElementById("l-s").m=function(e){
+  for(var i=0;i<this.length;i++){
+    if(e==this[i].text){
+      return this[i].value;
+    }
+  }return '"CommandError: script not found"';
+};
+document.getElementById("r-f").c=function(e){
+  if(e[1]=="%"){
+    try{
+      this.value+=eval(document.getElementById("l-s")
+      .m(e.substring(2)));
+    }catch(e){
+      document.getElementById("r-f").value+=e;
+    }
+  }else{
+    e=e.substring(1).trim().split(" ");
+    switch(e[0]){
+      case "clear":
+        document.getElementById("c-1").onclick();
+        break;
+      case "fontsize":
+        var a=parseInt(Number(e[1]));
+        if(isNaN(a)) this.value+="Usage: %%fontsize [0-9]+";
+        else document.fontsize(a);
+        break;
+      case "clearcmds":
+        __INTERPRETER_STORAGE__(-2,0,"clear");
+        break;
+      case "save":
+        document.getElementById("s-a").onclick();
+        break;
+      case "run":
+        document.getElementById("r-u").onclick();
+        break;
+      case "delete":
+        document.getElementById("c-2").onclick();
+        break;
+      case "title":
+        e.shift();
+        document.getElementById("s-t").value=e.join(" ");
+        break;
+      case "list":
+        var S=document.getElementById("l-s"),L=S.length;
+        if(e.length==1){
+          e="";
+          for(var i=0;i<L;i++)
+            e+=S[i].text+"\n";
+          this.value+=e;
+          break;
+        }
+        e=e[1];
+        for(var i=0;i<L;i++){
+          if(S[i].text==e){
+            S.selectedIndex=i;
+            S.onclick();e=1;break;
+          }
+        }
+        if(e!==1)
+        this.value+="Usage: %%list: show the list\n  %%list [script name]";
+        break;
+      case "color":
+      var a,b,c=function(d,g){
+        f=document.getElementById(d),n=f.className.split(" ");
+        f.className=n[0]+" "+g;
+      };
+        if(e[1]=="white")
+          a="w-g",b="w-w";
+        else if(e[1]=="black"||e[1]=="dark")
+          a="b-g",b="b-w";
+        else if(e[1]=="gray")
+          a="g-g",b="b-w";
+        else if(e[1]=="green")
+          a="n-g",b="n-w";
+        else {
+          this.value+="Usage: %%color [white|black|gray|green]";
+          return;
+        }
+        c("l-s",a);c("c-1",b);c("c-2",b);c("s-a",b);
+        c("r-u",b);c("s-o",b);c("r-f",a);c("s-h",a);
+        c("p-f",a);c("s-t",a);c("s-c",a);
+        document.getElementsByTagName("body")[0].className
+          =a;
+        break;
+      case "cmds":
+        if(__INTERPRETER_STORAGE__(-1)==-1) return;
+        var c=-1,s="\n",a=parseInt(Number(e[1]))
+          ,b=parseInt(Number(e[2]));
+        if(isNaN(a)) this.value+="Usage: cmds [start] [end]?";
+        if(isNaN(b)){
+          __INTERPRETER_STORAGE__(0);
+        }else{
+          do __INTERPRETER_STORAGE__(0); 
+          while(__INTERPRETER_STORAGE__(-1)&&++c<a)
+          a=b;
+        }
+        while((b=__INTERPRETER_STORAGE__(-1))&&c++<a)
+          s+=b+":"+__INTERPRETER_STORAGE__(0)+"\n";
+        this.value+=s;
+        break;
+      case "match":
+        var a=document.getElementById("s-h");
+        if(e[1]=="on") a.M=1;
+        else if(e[1]=="off") a.M=0,a.D=0;
+        else this.value+="Usage: match [on|off]";
+        break;
+      case "descript":
+        this.value+=document.getElementById("d-s").content;
+        break;
+      case "help":
+        this.value+=document.getElementById("h-p").content;
+        break;
+      default:
+        this.value+="CommandError: invalid command";
+    }
+  }
+}
+document.getElementById("s-o").onclick=function(){
+  __INTERPRETER_STORAGE__(0
+    ,document.getElementById("p-f").value);
+  document.getElementById("r-f").value+=
+    document.getElementById("p-f").value+"\n";
+  document.getElementById("r-f").value+=">>";
+  if(document.getElementById("p-f").value[0]=="%")
+     document.getElementById("r-f").c
+       (document.getElementById("p-f").value);
+  else if(document.getElementById("p-f").value[0]=="#")
+    document.getElementById("s-c").a
+      (document.getElementById("p-f").value);
+  else{
+    try {
+      document.getElementById("r-f").value
+       +=eval(document.getElementById("p-f").value);
+    }catch(e){
+      document.getElementById("r-f").value+=e;
+    }
+  }
+  document.getElementById("r-f").value+="\n";
+  document.getElementById("p-f").value="";
+  document.getElementById("r-f").scrollTop
+    =document.getElementById("r-f").scrollHeight;
+}
+document.getElementById("p-f").onkeydown=function(){
+  if(document.getElementById("s-h").D
+    ||document.getElementById("s-h").M){
+    if(!document.getElementById("s-h").b(this,event))return;
+  }
+  if(event.key=="Enter"){
+    event.preventDefault();
+    document.getElementById("s-o").onclick();
+  }else if(event.key=="ArrowDown"||event.key=="Down"){
+    if(__INTERPRETER_STORAGE__(-1)==-1) return;
+    this.value=__INTERPRETER_STORAGE__(1);
+  }else if(event.key=="ArrowUp"||event.key=="Up"){
+    if(__INTERPRETER_STORAGE__(-1)==-1) return;
+    this.value=__INTERPRETER_STORAGE__(0);
+    document.getElementById("p-f").selectionStart = document.getElementById("p-f").value.length;
+    document.getElementById("p-f").selectionEnd = document.getElementById("p-f").value.length;
+    event.preventDefault();
+  }else if(event.key=="Tab"){
+    document.getElementById("s-h").a(this);
+    event.preventDefault();
+  }
+};
+document.getElementById("p-f").focus();
+</script>
+
+</body>
+</html>

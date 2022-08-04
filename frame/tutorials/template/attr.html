@@ -1,0 +1,163 @@
+﻿  <html>
+<head>
+<title>Frame</title>
+
+<link rel=stylesheet type="text/css" href="../../files/latest/css/base.css">
+<link rel=stylesheet type="text/css" href="../../files/latest/css/frameEx.css">
+<link rel=stylesheet type="text/css" href="../../files/latest/css/theme.css">
+<link rel=stylesheet type="text/css" href="../../files/latest/css/menu.css">
+<link rel="stylesheet" href="../../css/gen.css">
+<link rel="stylesheet" href="../../css/codemirror.css">
+<link rel="stylesheet" href="../../css/ayu-dark.css">
+
+<style>
+
+body{
+  font-size: 15px;
+}
+.description-text{
+  margin-left: 25px;
+  font-family: "Segoe UI",sans-serif;
+  line-height: 1.5;
+}
+.little-title{
+  color:#99f;
+  margin-left: 25px;
+}
+#h_title{
+  text-align:center;
+  border-width: 0 0 2px 0;
+  border-color:#00d;
+  border-style: solid;
+}
+#h_description{
+  margin-left: 30px;
+  font-family: "Segoe UI",sans-serif;
+  line-height: 1.5;
+}
+.show_code{
+  font-size: 18px;
+  margin-left: 35px;
+  margin-right: 35px;
+}
+.run_code{
+  width: 100px;
+  height: 25px;
+  float: right;
+  text-align:center;
+  line-height: 1.5;
+  background-color:#11a;
+  border-radius: 5px;
+  font-family: "Segoe UI",sans-serif;
+  margin-right: 35px;
+  -o-user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.run_code:hover{
+  background-color:#33b;
+  transition: 0.3s;
+}
+.run_code:active{
+  background-color:#55c;
+  transition: 0.3s;
+}
+.CodeMirror {
+    height: auto;
+}
+
+.CodeMirror-scroll {
+    height: auto;
+}
+
+</style>
+
+<script src="../../files/latest/js/main.js"></script>
+<script src="../../files/latest/js/frameEx.js"></script>
+<script src="../../files/latest/js/event.js"></script>
+<script src="../../files/latest/js/theme.js"></script>
+<script src="../../files/latest/js/menu.js"></script>
+<script src="../../js/lib.js"></script>
+<script src="../../js/codemirror.js"></script>
+
+
+
+</head>
+
+<body>
+
+<h1 id="h_title"></h1>
+
+<h4 id="h_description"></h4>
+
+<h3 class="little-title">Type:</h3>
+<h4 id="h_type" class="description-text"></h4>
+
+<h3 class="little-title">Default:</h3>
+<h4 id="h_default" class="description-text"></h4>
+
+<h3 class="little-title">Support values:</h3>
+<h4 id="h_support_value" class="description-text"></h4>
+
+<h3 class="little-title">Example:</h3>
+<div id="example_list"></div>
+
+<script src="header.js"></script>
+<script>
+var h_title = document.getElementById("h_title");
+var h_description = document.getElementById("h_description");
+var h_type = document.getElementById("h_type");
+var h_default = document.getElementById("h_default");
+var h_support_value = document.getElementById("h_support_value");
+var show_code = document.getElementById("show_code");
+var run_code = document.getElementById("run_code");
+var example_list = document.getElementById("example_list");
+
+function load_info(args){
+  h_title.innerText = args.title;
+  h_description.innerText = args.description;
+  h_type.innerText = args.type;
+  h_default.innerText = args.default;
+  h_support_value.innerText = args.support_value;
+  for(var i=0;i<args.code.length;i++){
+    var entry = args.code[i];
+    var title_ = document.createElement("h4");
+    var description_ = document.createElement("h5");
+    var show_code = document.createElement("div");
+    var run_code = document.createElement("div");
+    title_.classList.add("description-text");
+    description_.classList.add("description-text");
+    title_.classList.add("description-text");
+    show_code.classList.add("show_code");
+    run_code.classList.add("run_code");
+    title_.innerText = entry.title;
+    description_.innerText = entry.description;
+    run_code.innerText = "Run Code";
+    if(entry.title!==null) example_list.appendChild(title_);
+    if(entry.description!==null) example_list.appendChild(description_);
+    if(entry.code!==null) {
+      example_list.appendChild(show_code);
+      example_list.appendChild(run_code);
+      var cm = CodeMirror(show_code, {
+        lineNumbers: true,
+        mode: "javascript",
+        value: entry.code,
+        readOnly: true,
+        theme: "ayu-dark"
+      });
+      
+      run_code.addEventListener("click", new Function(entry.code));
+    }
+  }
+  
+}
+loadJSON(function(str){
+  load_info(JSON.parse(str));
+}, (new URL(location.href)).searchParams.get("json"));
+
+
+</script>
+</body>
+</html> 

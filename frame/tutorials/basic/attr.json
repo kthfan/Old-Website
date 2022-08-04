@@ -1,0 +1,8 @@
+{"title":"title",
+           "description":"description",
+           "type":"type",
+           "default":"default",
+           "support_value":"support_value",
+           "example":"a+b+c\n222\n3",
+           "run_func":""
+}

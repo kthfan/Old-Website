@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>base encoders</title>
+        <meta charset="UTF-8"/>
+        <link rel=stylesheet type="text/css" href="./main.css"/>
+        <script src="./bundle.js"></script>
+    </head>
+    <body>
+        <table class="full-width">
+            <tr class="half-width">
+                <td>
+                    <div id="before-section" class="section">
+                        <h1>Decoded</h1>
+                        <input id="before-file" type="file"/></br>
+                        <input id="before-fn" type="text" value="raw.txt"/></br>
+                        <button id="before-dn">download</button></br>
+                        <textarea id="before-text">Hello, world!</textarea></br>
+                        <input id="before-show-text" type="checkbox" checked/>show text
+                    </div>
+                </td>
+                <td id="bn-td">
+                    <div id="bn-section">
+                        <h1>To</h1>
+                        <div id="top-padding-height"></div>
+                        <button id="base16-bn">Base16</button></br>
+                        <button id="base32-bn">Base32</button></br>
+                        <button id="base36-bn">Base36</button></br>
+                        <button id="base58-bn">Base58</button></br>
+                        <button id="base62-bn">Base62</button></br>
+                        <button id="base64-bn">Base64</button></br>
+                        <button id="base85-bn">Base85</button></br>
+                        <button id="base91-bn">Base91</button></br>
+                        <button id="base92-bn">Base92</button></br>
+                        <button id="base122-bn">Base122</button></br>
+                        <button id="base2048-bn">Base2048</button></br>
+                        <button id="base32768-bn">Base32768</button></br>
+                        <button id="base65536-bn">Base65536</button></br>
+                        <button id="base131072-bn">Base131072</button></br>
+                        <div id="bottom-padding-height"></div>
+                    </div>
+                </td>
+                <td  class="half-width">
+                    <div id="after-section" class="section">
+                        <h1>Encoded</h1>
+                        <input id="after-file" type="file"/></br>
+                        <input id="after-fn" type="text" value="encoded.txt"/></br>
+                        <button id="after-dn">download</button></br>
+                        <textarea id="after-text"></textarea></br>
+                        <input id="after-show-text" type="checkbox" checked/>show text
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h2>Benchmark</h2>
+                    <input id="test-size" type="text" value="5000"/><button id="test-bn">test</button>
+                    <table id="test-log">
+                        <tr>
+                            <td class="pre-td">Encoding Type</td>
+                            <td class="pre-td">correct(T/F)</td>
+                            <td class="pre-td">time(ms)</td>
+                            <td class="pre-td">encoded-size/origin-length</td>
+                            <td class="pre-td">encoded-json-size/origin-size</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Source code:</h3>
+                    <table style="margin-left: 15px;">
+                        <tr>
+                            <td>Base16:</td><td><a></a></td>
+                        </tr>
+                        <tr>
+                            <td>Base32:</td><td><a>https://github.com/agnoster/base32-js</a></td>
+                        </tr>
+                        <tr>
+                            <td>Base36:</td><td><a>https://github.com/AshKyd/b36</a></td>
+                        </tr>
+                        <tr>
+                            <td>Base58:</td><td><a>https://github.com/45678/Base58</a></td>
+                        </tr>
+                        <tr>
+                            <td>Base62:</td><td><a>https://github.com/base62/base62.js</a></td>
+                        </tr>
+                        <tr>
+                            <td>Base64:</td><td><a>https://gist.github.com/darmie/e39373ee0a0f62715f3d2381bc1f0974</a></td>
+                        </tr>
+                        <tr>
+                            <td>Base85:</td><td><a>https://github.com/nE0sIghT/ascii85.js</a></td>
+                        </tr>
+                        <tr>
+                            <td>Base91:</td><td><a>https://github.com/mscdex/base91.js</a></td>
+                        </tr>
+                        <tr>
+                            <td>Base92:</td><td><a>https://github.com/devinux/node-base92</a></td>
+                        </tr>
+                        <tr>
+                            <td>Base122:</td><td><a>https://github.com/kevinAlbs/Base122</a></td>
+                        </tr>
+                        <tr>
+                            <td>Base2048:</td><td><a>https://github.com/qntm/base2048</a></td>
+                        </tr>
+                        <tr>
+                            <td>Base32768:</td><td><a>https://github.com/qntm/base32768</a></td>
+                        </tr>
+                        <tr>
+                            <td>Base65536:</td><td><a>https://github.com/qntm/base65536</a></td>
+                        </tr>
+                        <tr>
+                            <td>Base131072:</td><td><a>https://github.com/qntm/base131072</a></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <script src="./test.js"></script>
+        <script src="./index.js"></script>
+    </body>
+
+</html>

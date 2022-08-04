@@ -1,0 +1,161 @@
+﻿/*default theme*/
+.fra-dfts{
+  color:#000;
+}
+.fra-dfts:hover{
+ background-color:#ddd;
+}
+.fra-dfts:active{
+ background-color:#ccc;
+}
+.fra-dftse:hover{
+ background-color:#f22;
+}
+.fra-dftse:active{
+ background-color:#f55;
+}
+ /*frame*/
+.fra-dft{
+  border-style:solid;
+  border-width:1px;
+  border-color:#35F;
+  background-color:#fff;
+}
+
+
+/*base*/
+.fra-fra{
+ position:absolute;
+}
+.fra-bd{
+ position:absolute;
+ top:7px;
+ left:7px;
+ overflow:hidden;
+}
+.fra-bn{
+ vertical-align:50%;
+ position:absolute;
+ height:24px;
+ width:28px;
+ font-family:sans-serif;
+ font-size:22px;
+ text-align:center;
+ cursor:pointer; 
+}
+.fra-se{
+ top:0px;
+ right:0px;
+}
+.fra-sh{
+ top:0px;
+ right:56px;
+}
+.fra-sf{
+ top:0px;
+ right:28px;
+}
+.fra-sr{
+ top:0px;
+ right:28px;
+}
+.fra-st{
+ position:static;
+ top:0px;
+ right:28px;
+ margin-right:5px;
+ cursor:default;
+}
+.fra-ti{
+ vertical-align:100%;
+ /*white-space:nowrap;*/
+}
+.fra-hd{
+ position:absolute;
+ font-size:15px;
+ top:0px;
+ left:0px;
+ height:26px;
+ overflow:hidden;
+ /*line-height:100%;*/
+}
+.fra-cn{
+ overflow:auto;
+ position:absolute;
+ top:26px;
+ left:0px;
+}
+.fra-0{ 
+ position:absolute;cursor:nw-resize;
+ left:0px; top:0px;
+ width:7px; height:7px;
+}
+.fra-1{
+ position:absolute; cursor:s-resize;
+ left:7px; top:0px;
+ height:7px;
+}
+.fra-2{
+ position:absolute; cursor:ne-resize;
+ top:0px;
+ width:7px; height:7px;
+}
+.fra-3{
+ position:absolute; cursor:w-resize;
+ left:0px; top:7px;
+ width:7px;
+}
+.fra-4{
+ position:absolute; cursor:w-resize;
+ top:7px;
+ width:7px;
+}
+.fra-5{
+ position:absolute; cursor:ne-resize;
+ left:0px;
+ width:7px; height:7px;
+}
+.fra-6{
+ position:absolute; cursor:s-resize;
+ left:7px;
+ height:7px;
+}
+.fra-7{
+ position:absolute; cursor:nw-resize;
+ width:7px; height:7px;
+}
+.fra-sha{
+ -webkit-filter:drop-shadow(5px 5px 5px #333);
+-o-filter:drop-shadow(5px 5px 5px #333);
+ -moz-filter:drop-shadow(5px 5px 5px #333);
+ -ms-filter:drop-shadow(5px 5px 5px #333);
+ filter:drop-shadow(5px 5px 5px #333);
+}
+.fra-dsha{
+-webkit-filter:drop-shadow(0px 0px 0px rgba(0,0,0,0));
+-o-filter:drop-shadow(0px 0px 0px rgba(0,0,0,0));
+ -moz-filter:drop-shadow(0px 0px 0px rgba(0,0,0,0));
+ -ms-filter:drop-shadow(0px 0px 0px rgba(0,0,0,0));
+ filter:drop-shadow(0px 0px 0px rgba(0,0,0,0));
+}
+.fra-usel{
+  -o-user-select:none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.fra-sel{
+  -o-user-select: text;
+  -moz-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+.fra-ful{
+ border-radius:0px;
+}
+.fra-zs{
+ width:0px;
+ height:0px;
+}
